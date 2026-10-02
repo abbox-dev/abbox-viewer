@@ -65,6 +65,32 @@ describe("viewer", () => {
     fetchSpy.mockRestore();
   });
 
+  it("keeps the selected file when resetting the input clears its file list", async () => {
+    const input = screen.getByLabelText("Select file") as HTMLInputElement;
+    const file = jsonFile("abbox.json", screens);
+    let listed: File[] = [file];
+    Object.defineProperty(input, "files", {
+      configurable: true,
+      get: () => listed,
+    });
+    Object.defineProperty(input, "value", {
+      configurable: true,
+      get: () => "",
+      set: (next: string) => {
+        if (next === "") {
+          listed = [];
+        }
+      },
+    });
+
+    fireEvent.change(input);
+
+    expect(
+      await screen.findByRole("heading", { name: "6 Screens" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("src/routes/index.tsx")).toBeInTheDocument();
+  });
+
   it("accepts product IR content when the filename is not .json", async () => {
     const input = screen.getByLabelText("Select file");
     fireEvent.change(input, {
