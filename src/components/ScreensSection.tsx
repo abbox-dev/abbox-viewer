@@ -1,7 +1,16 @@
-import type { ScreenItem } from "../ir/types";
+import { outgoingByFrom } from "../ir/navigationView";
+import type { NavigationField, ScreenItem } from "../ir/types";
 import { JsonTree } from "./JsonTree";
 
-export function ScreensSection({ items }: { items: ScreenItem[] }) {
+type ScreensSectionProps = {
+  items: ScreenItem[];
+  navigation: NavigationField;
+};
+
+export function ScreensSection({ items, navigation }: ScreensSectionProps) {
+  const outgoing = outgoingByFrom(navigation);
+  const showPerScreenNav = navigation.status !== "absent";
+
   return (
     <section className="screens" aria-labelledby="screens-heading">
       <h3 id="screens-heading">Screens</h3>
@@ -12,6 +21,12 @@ export function ScreensSection({ items }: { items: ScreenItem[] }) {
             <li className="screen" key={`screen-${String(index)}`}>
               <p className="route">{item.route}</p>
               <p className="file">{item.file}</p>
+              {showPerScreenNav ? (
+                <ScreenNavigation
+                  destinations={outgoing.get(item.route) ?? []}
+                  navId={`screen-nav-${String(index)}`}
+                />
+              ) : null}
             </li>
           ) : (
             <li className="invalid-entry" key={`screen-${String(index)}`}>
@@ -20,6 +35,41 @@ export function ScreensSection({ items }: { items: ScreenItem[] }) {
             </li>
           ),
         )}
+      </ul>
+    </section>
+  );
+}
+
+function ScreenNavigation({
+  destinations,
+  navId,
+}: {
+  destinations: string[];
+  navId: string;
+}) {
+  const headingId = `${navId}-heading`;
+
+  if (destinations.length === 0) {
+    return (
+      <section className="screen-nav" aria-labelledby={headingId}>
+        <p className="nav-heading" id={headingId}>
+          No discovered navigation
+        </p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="screen-nav" aria-labelledby={headingId}>
+      <p className="nav-heading" id={headingId}>
+        Navigates to
+      </p>
+      <ul className="nav-out">
+        {destinations.map((route, index) => (
+          <li key={`${route}-${String(index)}`}>
+            <span className="route">{route}</span>
+          </li>
+        ))}
       </ul>
     </section>
   );

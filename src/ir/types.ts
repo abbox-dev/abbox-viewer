@@ -25,6 +25,25 @@ export type InvalidScreenItem = {
 
 export type ScreenItem = ValidScreenItem | InvalidScreenItem;
 
+export type ValidNavigationItem = {
+  kind: "valid";
+  from: string;
+  to: string;
+};
+
+export type InvalidNavigationItem = {
+  kind: "invalid";
+  index: number;
+  raw: JsonValue;
+};
+
+export type NavigationItem = ValidNavigationItem | InvalidNavigationItem;
+
+export type NavigationField =
+  | { status: "absent" }
+  | { status: "invalid"; message: string; raw: JsonValue }
+  | { status: "present"; items: NavigationItem[] };
+
 export type UnreadableResult = {
   ok: false;
   kind: "unreadable";
@@ -42,6 +61,8 @@ export type InvalidProductResult = {
 export type LoadedResult = {
   ok: true;
   items: ScreenItem[];
+  navigation: NavigationField;
+  schemaVersion?: "1";
   unrecognized: UnrecognizedEntry[];
 };
 

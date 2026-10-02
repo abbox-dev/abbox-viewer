@@ -14,10 +14,15 @@ import screens from "./fixtures/screens.json" with { type: "json" };
 import screensAndUnknown from "./fixtures/screens-and-unknown.json" with {
   type: "json",
 };
+import screensWithNavigation from "./fixtures/screens-with-navigation.json" with {
+  type: "json",
+};
 import unknownOnly from "./fixtures/unknown-only.json" with { type: "json" };
 
 const SCREENS_REQUIRED =
   "This file is not a valid Product IR. screens is required.";
+
+const NAVIGATION_ABSENT = { status: "absent" as const };
 
 function run(value: unknown) {
   return interpret(JSON.stringify(value));
@@ -42,6 +47,7 @@ describe("interpret", () => {
         screen("/programs/$programId", "src/routes/programs/$programId.tsx"),
         screen("/saved", "src/routes/saved.tsx"),
       ],
+      navigation: NAVIGATION_ABSENT,
       unrecognized: [],
     });
   });
@@ -57,6 +63,7 @@ describe("interpret", () => {
     ).toEqual({
       ok: true,
       items: [screen("/z", "z.tsx"), screen("/a", "a.tsx")],
+      navigation: NAVIGATION_ABSENT,
       unrecognized: [],
     });
   });
@@ -72,6 +79,7 @@ describe("interpret", () => {
     ).toEqual({
       ok: true,
       items: [screen("/programs", "a.tsx"), screen("/programs", "b.tsx")],
+      navigation: NAVIGATION_ABSENT,
       unrecognized: [],
     });
   });
@@ -80,6 +88,7 @@ describe("interpret", () => {
     expect(interpret(JSON.stringify(emptyScreens))).toEqual({
       ok: true,
       items: [],
+      navigation: NAVIGATION_ABSENT,
       unrecognized: [],
     });
   });
@@ -88,6 +97,7 @@ describe("interpret", () => {
     expect(run({ screens: [{ route: "", source: { file: "" } }] })).toEqual({
       ok: true,
       items: [screen("", "")],
+      navigation: NAVIGATION_ABSENT,
       unrecognized: [],
     });
   });
@@ -98,6 +108,7 @@ describe("interpret", () => {
     ).toEqual({
       ok: true,
       items: [screen(" /x ", " a.tsx ")],
+      navigation: NAVIGATION_ABSENT,
       unrecognized: [],
     });
   });
@@ -126,6 +137,7 @@ describe("interpret", () => {
     expect(interpret(JSON.stringify(screensAndUnknown))).toEqual({
       ok: true,
       items: [screen("/dashboard", "src/routes/dashboard.tsx")],
+      navigation: NAVIGATION_ABSENT,
       unrecognized: [
         { path: "forms", value: [{ name: "login" }] },
         { path: "experimentalThing", value: { enabled: true } },
@@ -148,6 +160,7 @@ describe("interpret", () => {
     ).toEqual({
       ok: true,
       items: [screen("/home", "src/home.tsx")],
+      navigation: NAVIGATION_ABSENT,
       unrecognized: [
         { path: "forms", value: [] },
         { path: "screens[0].title", value: "Home" },
@@ -164,6 +177,7 @@ describe("interpret", () => {
     ).toEqual({
       ok: true,
       items: [{ kind: "invalid", index: 1, raw: 1 }, screen("/ok", "ok.tsx")],
+      navigation: NAVIGATION_ABSENT,
       unrecognized: [{ path: "screens[1].title", value: "Ok" }],
     });
   });
@@ -236,6 +250,7 @@ describe("interpret", () => {
           raw: { source: { file: "src/missing-route.tsx" } },
         },
       ],
+      navigation: NAVIGATION_ABSENT,
       unrecognized: [],
     });
   });
@@ -244,6 +259,7 @@ describe("interpret", () => {
     expect(run({ screens: [{ route: "/only" }] })).toEqual({
       ok: true,
       items: [{ kind: "invalid", index: 1, raw: { route: "/only" } }],
+      navigation: NAVIGATION_ABSENT,
       unrecognized: [],
     });
     expect(run({ screens: [{ route: "/only", source: { file: 1 } }] })).toEqual(
@@ -256,6 +272,7 @@ describe("interpret", () => {
             raw: { route: "/only", source: { file: 1 } },
           },
         ],
+        navigation: NAVIGATION_ABSENT,
         unrecognized: [],
       },
     );
@@ -272,6 +289,7 @@ describe("interpret", () => {
             raw: { route: 4, source: { file: "a.tsx" } },
           },
         ],
+        navigation: NAVIGATION_ABSENT,
         unrecognized: [],
       },
     );
@@ -289,11 +307,12 @@ describe("interpret", () => {
           raw: { title: "Nope", source: { file: "src/x.tsx" } },
         },
       ],
+      navigation: NAVIGATION_ABSENT,
       unrecognized: [],
     });
   });
 
-  it("treats schemaVersion beside screens as an unknown field", () => {
+  it("treats numeric schemaVersion as an unknown field", () => {
     expect(
       run({
         screens: [{ route: "/", source: { file: "a.tsx" } }],
@@ -302,7 +321,23 @@ describe("interpret", () => {
     ).toEqual({
       ok: true,
       items: [screen("/", "a.tsx")],
+      navigation: NAVIGATION_ABSENT,
       unrecognized: [{ path: "schemaVersion", value: 1 }],
+    });
+  });
+
+  it("recognizes string schemaVersion 1", () => {
+    expect(
+      run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        schemaVersion: "1",
+      }),
+    ).toEqual({
+      ok: true,
+      schemaVersion: "1",
+      items: [screen("/", "a.tsx")],
+      navigation: NAVIGATION_ABSENT,
+      unrecognized: [],
     });
   });
 
@@ -321,6 +356,7 @@ describe("interpret", () => {
     expect(interpret('\uFEFF{"screens":[]}')).toEqual({
       ok: true,
       items: [],
+      navigation: NAVIGATION_ABSENT,
       unrecognized: [],
     });
   });
@@ -338,6 +374,212 @@ describe("interpret", () => {
       ok: false,
       kind: "unreadable",
       message: "This file is not valid JSON.",
+    });
+  });
+
+  it("reads navigation with valid screen-to-screen edges", () => {
+    expect(interpret(JSON.stringify(screensWithNavigation))).toEqual({
+      ok: true,
+      schemaVersion: "1",
+      items: [
+        screen("/", "src/routes/index.tsx"),
+        screen(
+          "/investors/$investorId",
+          "src/routes/investors/$investorId.tsx",
+        ),
+        screen("/programs/", "src/routes/programs.index.tsx"),
+        screen("/programs", "src/routes/programs.tsx"),
+        screen("/programs/$programId", "src/routes/programs/$programId.tsx"),
+        screen("/saved", "src/routes/saved.tsx"),
+      ],
+      navigation: {
+        status: "present",
+        items: [
+          { kind: "valid", from: "/", to: "/investors/$investorId" },
+          { kind: "valid", from: "/investors/$investorId", to: "/" },
+          { kind: "valid", from: "/programs/$programId", to: "/programs" },
+        ],
+      },
+      unrecognized: [],
+    });
+  });
+
+  it("treats missing navigation as absent", () => {
+    const result = run({
+      screens: [{ route: "/", source: { file: "a.tsx" } }],
+    });
+    expect(result.ok && result.navigation).toEqual(NAVIGATION_ABSENT);
+  });
+
+  it("loads an empty navigation array", () => {
+    expect(
+      run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        navigation: [],
+      }),
+    ).toEqual({
+      ok: true,
+      items: [screen("/", "a.tsx")],
+      navigation: { status: "present", items: [] },
+      unrecognized: [],
+    });
+  });
+
+  it("rejects a non-array navigation value", () => {
+    expect(
+      run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        navigation: "nope",
+      }),
+    ).toEqual({
+      ok: true,
+      items: [screen("/", "a.tsx")],
+      navigation: {
+        status: "invalid",
+        message: "navigation must be an array.",
+        raw: "nope",
+      },
+      unrecognized: [],
+    });
+  });
+
+  it("rejects navigation entries with unknown routes", () => {
+    expect(
+      run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        navigation: [{ from: "/", to: "/missing" }],
+      }),
+    ).toEqual({
+      ok: true,
+      items: [screen("/", "a.tsx")],
+      navigation: {
+        status: "present",
+        items: [
+          {
+            kind: "invalid",
+            index: 1,
+            raw: { from: "/", to: "/missing" },
+          },
+        ],
+      },
+      unrecognized: [],
+    });
+  });
+
+  it("keeps valid navigation beside invalid entries", () => {
+    expect(
+      run({
+        screens: [
+          { route: "/", source: { file: "a.tsx" } },
+          { route: "/b", source: { file: "b.tsx" } },
+        ],
+        navigation: [
+          { from: "/", to: "/b" },
+          { from: "/", to: "/ghost" },
+        ],
+      }),
+    ).toEqual({
+      ok: true,
+      items: [screen("/", "a.tsx"), screen("/b", "b.tsx")],
+      navigation: {
+        status: "present",
+        items: [
+          { kind: "valid", from: "/", to: "/b" },
+          {
+            kind: "invalid",
+            index: 2,
+            raw: { from: "/", to: "/ghost" },
+          },
+        ],
+      },
+      unrecognized: [],
+    });
+  });
+
+  it("preserves extra fields on valid navigation entries", () => {
+    expect(
+      run({
+        screens: [
+          { route: "/", source: { file: "a.tsx" } },
+          { route: "/b", source: { file: "b.tsx" } },
+        ],
+        navigation: [{ from: "/", to: "/b", label: "go" }],
+      }),
+    ).toEqual({
+      ok: true,
+      items: [screen("/", "a.tsx"), screen("/b", "b.tsx")],
+      navigation: {
+        status: "present",
+        items: [{ kind: "valid", from: "/", to: "/b" }],
+      },
+      unrecognized: [{ path: "navigation[0].label", value: "go" }],
+    });
+  });
+
+  it("keeps duplicate valid navigation entries", () => {
+    expect(
+      run({
+        screens: [
+          { route: "/", source: { file: "a.tsx" } },
+          { route: "/b", source: { file: "b.tsx" } },
+        ],
+        navigation: [
+          { from: "/", to: "/b" },
+          { from: "/", to: "/b" },
+        ],
+      }),
+    ).toEqual({
+      ok: true,
+      items: [screen("/", "a.tsx"), screen("/b", "b.tsx")],
+      navigation: {
+        status: "present",
+        items: [
+          { kind: "valid", from: "/", to: "/b" },
+          { kind: "valid", from: "/", to: "/b" },
+        ],
+      },
+      unrecognized: [],
+    });
+  });
+
+  it("keeps navigation and preserves unrelated unknown fields", () => {
+    expect(
+      run({
+        screens: [
+          { route: "/", source: { file: "a.tsx" } },
+          { route: "/b", source: { file: "b.tsx" } },
+        ],
+        navigation: [{ from: "/", to: "/b" }],
+        forms: [],
+      }),
+    ).toEqual({
+      ok: true,
+      items: [screen("/", "a.tsx"), screen("/b", "b.tsx")],
+      navigation: {
+        status: "present",
+        items: [{ kind: "valid", from: "/", to: "/b" }],
+      },
+      unrecognized: [{ path: "forms", value: [] }],
+    });
+  });
+
+  it("rejects malformed navigation entry shapes", () => {
+    expect(
+      run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        navigation: [1, { from: 1, to: "/" }],
+      }),
+    ).toEqual({
+      ok: true,
+      items: [screen("/", "a.tsx")],
+      navigation: {
+        status: "present",
+        items: [
+          { kind: "invalid", index: 1, raw: 1 },
+          { kind: "invalid", index: 2, raw: { from: 1, to: "/" } },
+        ],
+      },
+      unrecognized: [],
     });
   });
 });

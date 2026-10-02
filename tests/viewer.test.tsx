@@ -14,6 +14,9 @@ import screens from "./fixtures/screens.json" with { type: "json" };
 import screensAndUnknown from "./fixtures/screens-and-unknown.json" with {
   type: "json",
 };
+import screensWithNavigation from "./fixtures/screens-with-navigation.json" with {
+  type: "json",
+};
 import unknownOnly from "./fixtures/unknown-only.json" with { type: "json" };
 
 import "@testing-library/jest-dom/vitest";
@@ -113,7 +116,7 @@ describe("viewer", () => {
     expect(screen.getByText("experimentalThing")).toBeInTheDocument();
   });
 
-  it("shows schemaVersion only as unrecognized data", async () => {
+  it("shows numeric schemaVersion only as unrecognized data", async () => {
     await selectFile(
       jsonFile("versioned.json", {
         screens: [{ route: "/", source: { file: "a.tsx" } }],
@@ -124,7 +127,50 @@ describe("viewer", () => {
       screen.getByRole("heading", { name: "1 Screen" }),
     ).toBeInTheDocument();
     expect(screen.getByText("schemaVersion")).toBeInTheDocument();
-    expect(screen.queryByText(/format version/i)).not.toBeInTheDocument();
+    expect(screen.queryByText("Product IR v1")).not.toBeInTheDocument();
+  });
+
+  it("shows navigation and Product IR v1 for a versioned snapshot", async () => {
+    await selectFile(jsonFile("abbox.json", screensWithNavigation));
+    expect(screen.getByText("Product IR v1")).toBeInTheDocument();
+    expect(screen.getByText("3 Connections")).toBeInTheDocument();
+    expect(screen.getAllByText("Navigates to").length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText("/investors/$investorId").length,
+    ).toBeGreaterThanOrEqual(2);
+    expect(
+      screen.queryByRole("heading", { name: "Unrecognized data" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not show navigation UI when navigation is absent", async () => {
+    await selectFile(jsonFile("abbox.json", screens));
+    expect(screen.queryByText("3 Connections")).not.toBeInTheDocument();
+    expect(screen.queryByText("Navigates to")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("No discovered navigation"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows unknown-route navigation as invalid without listing it under Navigates to", async () => {
+    await selectFile(
+      jsonFile("bad-nav.json", {
+        screens: [
+          { route: "/", source: { file: "a.tsx" } },
+          { route: "/b", source: { file: "b.tsx" } },
+        ],
+        navigation: [{ from: "/", to: "/ghost" }],
+      }),
+    );
+    expect(screen.getByText("0 Connections")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Navigation (invalid)" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Navigation entry 1 is invalid."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Navigates to")).not.toBeInTheDocument();
+    expect(document.body.textContent).toContain('"/ghost"');
   });
 
   it("rejects an object of only unknown fields without a screen count", async () => {
