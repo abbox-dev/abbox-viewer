@@ -134,6 +134,16 @@ describe("viewer", () => {
     await selectFile(jsonFile("abbox.json", screensWithNavigation));
     expect(screen.getByText("Product IR v1")).toBeInTheDocument();
     expect(screen.getByText("3 Connections")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Product map" }),
+    ).toBeInTheDocument();
+    const connectionsList = document.getElementById("product-map-connections");
+    expect(connectionsList).toBeTruthy();
+    expect(connectionsList).toHaveClass("visually-hidden");
+    expect(connectionsList).toHaveTextContent("Connections (discovered)");
+    expect(connectionsList).toHaveTextContent("/investors/$investorId");
+    const edgePaths = document.querySelectorAll(".map-edges path[marker-end]");
+    expect(edgePaths.length).toBeGreaterThanOrEqual(3);
     expect(screen.getAllByText("Navigates to").length).toBeGreaterThan(0);
     expect(
       screen.getAllByText("/investors/$investorId").length,
@@ -150,6 +160,42 @@ describe("viewer", () => {
     expect(
       screen.queryByText("No discovered navigation"),
     ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Product map" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows Product map with no edges when navigation is empty", async () => {
+    await selectFile(
+      jsonFile("empty-nav.json", {
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        navigation: [],
+      }),
+    );
+    expect(
+      screen.getByRole("heading", { name: "Product map" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("No discovered connections between screens."),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Connections (discovered)"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows Product map without edges for malformed navigation container", async () => {
+    await selectFile(
+      jsonFile("bad-nav-container.json", {
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        navigation: "nope",
+      }),
+    );
+    expect(
+      screen.getByRole("heading", { name: "Product map" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "navigation must be an array.",
+    );
   });
 
   it("shows unknown-route navigation as invalid without listing it under Navigates to", async () => {
