@@ -27,12 +27,13 @@ export function FilePicker({ onFiles }: FilePickerProps) {
         <input
           accept=".json,application/json"
           onChange={(event) => {
-            const { files } = event.currentTarget;
-            event.currentTarget.value = "";
-            if (!files || files.length === 0) {
+            const input = event.currentTarget;
+            const selected = input.files ? [...input.files] : [];
+            input.value = "";
+            if (selected.length === 0) {
               return;
             }
-            void onFiles([...files]);
+            void onFiles(selected);
           }}
           type="file"
         />
