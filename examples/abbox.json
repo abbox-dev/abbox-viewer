@@ -1,0 +1,40 @@
+{
+  "screens": [
+    {
+      "route": "/",
+      "source": {
+        "file": "src/routes/index.tsx"
+      }
+    },
+    {
+      "route": "/investors/$investorId",
+      "source": {
+        "file": "src/routes/investors/$investorId.tsx"
+      }
+    },
+    {
+      "route": "/programs/",
+      "source": {
+        "file": "src/routes/programs.index.tsx"
+      }
+    },
+    {
+      "route": "/programs",
+      "source": {
+        "file": "src/routes/programs.tsx"
+      }
+    },
+    {
+      "route": "/programs/$programId",
+      "source": {
+        "file": "src/routes/programs/$programId.tsx"
+      }
+    },
+    {
+      "route": "/saved",
+      "source": {
+        "file": "src/routes/saved.tsx"
+      }
+    }
+  ]
+}

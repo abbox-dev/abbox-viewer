@@ -1,0 +1,8 @@
+{
+  "screens": "nope",
+  "forms": [
+    {
+      "name": "login"
+    }
+  ]
+}

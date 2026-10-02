@@ -1,0 +1,204 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f4f6f8;
+  --fg: #1b1e22;
+  --muted: #5d6772;
+  --line: #d5dbe3;
+  --surface: #ffffff;
+  --invalid: #8d2f2f;
+  --invalid-bg: #fdf3f3;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.5;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121417;
+    --fg: #eceff3;
+    --muted: #a8b1bb;
+    --line: #2d343c;
+    --surface: #1b1f24;
+    --invalid: #ffb4b4;
+    --invalid-bg: #2c1818;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  width: min(40rem, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 2.5rem 0 4rem;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.6rem;
+  font-weight: 640;
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: 1.35rem;
+  font-weight: 620;
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-size: 0.95rem;
+}
+
+.lede,
+.file-name,
+.drop-hint,
+.file {
+  color: var(--muted);
+}
+
+.lede {
+  margin-top: 0.4rem;
+}
+
+header {
+  margin-bottom: 1.5rem;
+}
+
+.dropzone {
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.file-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+}
+
+.drop-hint {
+  margin-top: 0.75rem;
+}
+
+.toolbar {
+  margin-top: 0.75rem;
+}
+
+button {
+  font: inherit;
+  color: var(--fg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+}
+
+.product {
+  margin-top: 1.75rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.eyebrow {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.status {
+  color: var(--invalid);
+}
+
+.screen-list,
+.unrecognized-list {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.screen,
+.invalid-entry,
+.unrecognized-list li {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.8rem 0.95rem;
+}
+
+.invalid-entry,
+.status {
+  border-color: var(--invalid);
+}
+
+.invalid-entry {
+  background: var(--invalid-bg);
+}
+
+.route,
+.file,
+.json-path,
+.json-key,
+.json-tree {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+
+.route {
+  font-size: 0.98rem;
+}
+
+.file,
+.json-path {
+  margin-top: 0.2rem;
+  font-size: 0.88rem;
+}
+
+.json-tree {
+  margin-top: 0.35rem;
+}
+
+.json-tree details {
+  margin-left: 0.75rem;
+}
+
+.json-tree summary {
+  cursor: pointer;
+}
+
+.json-tree ul,
+.json-tree ol {
+  margin: 0.35rem 0 0;
+  padding-left: 1.1rem;
+}
+
+@media (max-width: 640px) {
+  main {
+    width: min(40rem, calc(100% - 1.5rem));
+    padding-top: 1.5rem;
+  }
+
+  .file-label {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

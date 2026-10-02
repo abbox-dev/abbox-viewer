@@ -1,0 +1,18 @@
+{
+  "screens": [
+    {
+      "route": "/dashboard",
+      "source": {
+        "file": "src/routes/dashboard.tsx"
+      }
+    }
+  ],
+  "forms": [
+    {
+      "name": "login"
+    }
+  ],
+  "experimentalThing": {
+    "enabled": true
+  }
+}
