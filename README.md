@@ -26,6 +26,8 @@ Malformed `screens` data is labeled invalid and is not rewritten into a valid sh
 
 Malformed `navigation` data (including entries whose routes are not on a valid screen) is labeled invalid and stays inspectable. Valid navigation entries beside invalid ones still render in the screen list.
 
+When the `navigation` key is present, a **Product map** section appears above the Screens list. It shows valid screen routes and discovered connections as a simple row-based map with directed edges. Screens with no incoming or outgoing valid navigation appear under **No discovered connections**. The map does not infer links. When `navigation` is absent, no Product map is shown. For very large snapshots (many screens or connections), the map is replaced by a short text summary; the Screens list remains the detailed view. A textual **Connections (discovered)** list accompanies the map for accessibility.
+
 A file is accepted for its JSON and Product IR content. The `.json` extension is only a file-picker hint.
 
 `examples/abbox.json` is a sample snapshot with screens and navigation.

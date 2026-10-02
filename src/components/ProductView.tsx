@@ -1,10 +1,15 @@
-import { connectionCount, showConnectionSummary } from "../ir/navigationView";
+import {
+  connectionCount,
+  showConnectionSummary,
+  showProductMap,
+} from "../ir/navigationView";
 import type {
   InvalidProductResult,
   LoadedResult,
   NavigationField,
 } from "../ir/types";
 import { JsonTree } from "./JsonTree";
+import { ProductMapSection } from "./ProductMapSection";
 import { ScreensSection } from "./ScreensSection";
 import { UnrecognizedData } from "./UnrecognizedData";
 
@@ -48,6 +53,12 @@ export function ProductView({ fileName, result }: ProductViewProps) {
         </p>
       ) : null}
       {fileName ? <p className="file-name">{fileName}</p> : null}
+      {showProductMap(result.navigation) ? (
+        <ProductMapSection
+          items={result.items}
+          navigation={result.navigation}
+        />
+      ) : null}
       <ScreensSection items={result.items} navigation={result.navigation} />
       <InvalidNavigation navigation={result.navigation} />
       <UnrecognizedData entries={result.unrecognized} />

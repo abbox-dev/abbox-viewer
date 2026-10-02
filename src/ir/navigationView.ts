@@ -1,4 +1,4 @@
-import type { NavigationField, ScreenItem } from "./types";
+import type { NavigationField, ScreenItem, ValidNavigationItem } from "./types";
 
 export function connectionCount(navigation: NavigationField): number {
   if (navigation.status !== "present") {
@@ -9,6 +9,21 @@ export function connectionCount(navigation: NavigationField): number {
 
 export function showConnectionSummary(navigation: NavigationField): boolean {
   return navigation.status !== "absent";
+}
+
+export function showProductMap(navigation: NavigationField): boolean {
+  return navigation.status !== "absent";
+}
+
+export function validNavigationItems(
+  navigation: NavigationField,
+): ValidNavigationItem[] {
+  if (navigation.status !== "present") {
+    return [];
+  }
+  return navigation.items.filter(
+    (item): item is ValidNavigationItem => item.kind === "valid",
+  );
 }
 
 export function outgoingByFrom(
