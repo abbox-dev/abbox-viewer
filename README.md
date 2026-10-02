@@ -10,19 +10,25 @@ The official site will be [viewer.abbox.com](https://viewer.abbox.com).
 
 Abbox Viewer shows one Product IR snapshot. It is not the [Abbox compiler](https://github.com/abbox-dev/abbox), and it does not include Abbox Cloud.
 
-## What v0 recognizes
+## What the Viewer recognizes
 
 `screens` is required. A valid screen has a string `route` and a string `source.file`. Those values are shown as written. Routes are not sorted, deduplicated, or turned into a hierarchy.
 
 An empty `screens` array is a valid snapshot with zero screens. A JSON object without `screens`, including `{}`, is not a valid current Product IR.
 
-Additional fields are preserved and shown as unrecognized data. That includes extra top-level fields and extra fields on a valid screen or its `source` object. `schemaVersion` is not part of the current Product IR. If it appears, it is shown like any other unknown field.
+`navigation` is optional. When present, it must be an array. A valid navigation entry is an object with string `from` and string `to` where both routes exactly match a valid screen `route`. Valid edges are shown under each screen as outgoing navigation. The product summary shows a connection count when `navigation` is present. An empty `navigation` array means zero discovered connections. When the `navigation` key is absent, the Viewer does not show connection counts or per-screen navigation copy.
+
+`schemaVersion` is recognized only when it is the string `"1"`, shown as Product IR v1. Other `schemaVersion` values are preserved as unrecognized data.
+
+Additional fields are preserved and shown as unrecognized data. That includes extra top-level fields and extra fields on a valid screen, its `source` object, or a valid navigation entry.
 
 Malformed `screens` data is labeled invalid and is not rewritten into a valid shape. Valid screens beside an invalid entry still render. The raw invalid value stays inspectable.
 
+Malformed `navigation` data (including entries whose routes are not on a valid screen) is labeled invalid and stays inspectable. Valid navigation entries beside invalid ones still render in the screen list.
+
 A file is accepted for its JSON and Product IR content. The `.json` extension is only a file-picker hint.
 
-`examples/abbox.json` is a sample snapshot.
+`examples/abbox.json` is a sample snapshot with screens and navigation.
 
 ## Development
 

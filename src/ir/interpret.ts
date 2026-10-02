@@ -1,8 +1,13 @@
+import { knownScreenRoutes } from "./navigationView";
 import type {
   InterpretResult,
+  InvalidNavigationItem,
   InvalidScreenItem,
   JsonValue,
+  NavigationField,
+  NavigationItem,
   UnrecognizedEntry,
+  ValidNavigationItem,
   ValidScreenItem,
 } from "./types";
 
@@ -14,6 +19,7 @@ const NOT_OBJECT = "abbox.json must contain a JSON object.";
 const SCREENS_REQUIRED =
   "This file is not a valid Product IR. screens is required.";
 const SCREENS_MUST_BE_ARRAY = "screens must be an array.";
+const NAVIGATION_MUST_BE_ARRAY = "navigation must be an array.";
 
 const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
 
@@ -38,14 +44,30 @@ export function interpret(text: string): InterpretResult {
   const unrecognized: UnrecognizedEntry[] = [];
   let hasScreens = false;
   let screensValue: JsonValue | undefined;
+  let hasNavigation = false;
+  let navigationValue: JsonValue | undefined;
+  let schemaVersion: "1" | undefined;
 
   for (const [key, value] of entriesOf(root)) {
     if (key === "screens") {
       hasScreens = true;
       screensValue = value;
-    } else {
-      unrecognized.push({ path: formatKey(key), value });
+      continue;
     }
+    if (key === "navigation") {
+      hasNavigation = true;
+      navigationValue = value;
+      continue;
+    }
+    if (key === "schemaVersion") {
+      if (value === "1") {
+        schemaVersion = "1";
+      } else {
+        unrecognized.push({ path: formatKey(key), value });
+      }
+      continue;
+    }
+    unrecognized.push({ path: formatKey(key), value });
   }
 
   if (!hasScreens || screensValue === undefined) {
@@ -78,7 +100,84 @@ export function interpret(text: string): InterpretResult {
     items.push({ kind: "invalid", index: index + 1, raw: element });
   });
 
-  return { ok: true, items, unrecognized };
+  const navigation = parseNavigation(
+    hasNavigation,
+    navigationValue,
+    knownScreenRoutes(items),
+    unrecognized,
+  );
+
+  return {
+    ok: true,
+    items,
+    navigation,
+    ...(schemaVersion !== undefined ? { schemaVersion } : {}),
+    unrecognized,
+  };
+}
+
+function parseNavigation(
+  hasNavigation: boolean,
+  navigationValue: JsonValue | undefined,
+  routes: Set<string>,
+  unrecognized: UnrecognizedEntry[],
+): NavigationField {
+  if (!hasNavigation) {
+    return { status: "absent" };
+  }
+
+  if (!Array.isArray(navigationValue)) {
+    return {
+      status: "invalid",
+      message: NAVIGATION_MUST_BE_ARRAY,
+      raw: navigationValue as JsonValue,
+    };
+  }
+
+  const items: NavigationItem[] = [];
+  navigationValue.forEach((element, index) => {
+    const validated = validateNavigationEntry(
+      element,
+      index,
+      routes,
+      unrecognized,
+    );
+    items.push(validated);
+  });
+
+  return { status: "present", items };
+}
+
+function validateNavigationEntry(
+  value: JsonValue,
+  index: number,
+  routes: Set<string>,
+  unrecognized: UnrecognizedEntry[],
+): ValidNavigationItem | InvalidNavigationItem {
+  if (!isJsonObject(value)) {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  const record = ownRecord(value);
+  const from = record.from;
+  const to = record.to;
+  if (typeof from !== "string" || typeof to !== "string") {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  if (!routes.has(from) || !routes.has(to)) {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  const base = `navigation[${index}]`;
+  for (const [key, extra] of entriesOf(record)) {
+    if (key === "from" || key === "to") {
+      continue;
+    }
+    unrecognized.push({ path: joinPath(base, key), value: extra });
+  }
+
+  return { kind: "valid", from, to };
 }
 
 function validateScreen(
