@@ -1,3 +1,4 @@
+import { showActionSummary, validActionCount } from "../ir/actionsView";
 import { showDesignSystem } from "../ir/designSystemView";
 import {
   connectionCount,
@@ -5,6 +6,7 @@ import {
   showProductMap,
 } from "../ir/navigationView";
 import type {
+  ActionsField,
   InvalidProductResult,
   LoadedResult,
   NavigationField,
@@ -40,6 +42,7 @@ export function ProductView({ fileName, result }: ProductViewProps) {
     (item) => item.kind === "valid",
   ).length;
   const connections = connectionCount(result.navigation);
+  const actionTotal = validActionCount(result.actions);
 
   return (
     <section className="product">
@@ -54,6 +57,11 @@ export function ProductView({ fileName, result }: ProductViewProps) {
             : `${String(connections)} Connections`}
         </p>
       ) : null}
+      {showActionSummary(result.actions) ? (
+        <p className="product-meta">
+          {actionTotal === 1 ? "1 Action" : `${String(actionTotal)} Actions`}
+        </p>
+      ) : null}
       {fileName ? <p className="file-name">{fileName}</p> : null}
       {showProductMap(result.navigation) ? (
         <ProductMapSection
@@ -64,9 +72,60 @@ export function ProductView({ fileName, result }: ProductViewProps) {
       {showDesignSystem(result.designSystem) ? (
         <DesignSystemSection designSystem={result.designSystem} />
       ) : null}
-      <ScreensSection items={result.items} navigation={result.navigation} />
+      <ScreensSection
+        actions={result.actions}
+        items={result.items}
+        navigation={result.navigation}
+      />
       <InvalidNavigation navigation={result.navigation} />
+      <InvalidActions actions={result.actions} />
       <UnrecognizedData entries={result.unrecognized} />
+    </section>
+  );
+}
+
+function InvalidActions({ actions }: { actions: ActionsField }) {
+  if (actions.status === "invalid") {
+    return (
+      <section
+        className="invalid-actions"
+        aria-labelledby="invalid-actions-heading"
+      >
+        <h3 id="invalid-actions-heading">Actions (invalid)</h3>
+        <p className="status" role="alert">
+          {actions.message}
+        </p>
+        <JsonTree value={actions.raw} />
+      </section>
+    );
+  }
+
+  if (actions.status !== "present") {
+    return null;
+  }
+
+  const invalidItems = actions.items.filter((item) => item.kind === "invalid");
+  if (invalidItems.length === 0) {
+    return null;
+  }
+
+  return (
+    <section
+      className="invalid-actions"
+      aria-labelledby="invalid-actions-heading"
+    >
+      <h3 id="invalid-actions-heading">Actions (invalid)</h3>
+      <ul className="invalid-actions-list">
+        {invalidItems.map((item) => (
+          <li
+            className="invalid-entry"
+            key={`action-invalid-${String(item.index)}`}
+          >
+            <p>Action entry {item.index} is invalid.</p>
+            <JsonTree value={item.raw} />
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

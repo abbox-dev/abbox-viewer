@@ -30,13 +30,17 @@ When the `navigation` key is present, a **Product map** section appears above th
 
 `designSystem` is optional. When present, it must be an object with a `themes` array. A valid theme has a string `name` and a `colors` array. A valid color token has string `name`, string `value`, and string `source.file`. The compiler may attach optional canonical `hex` (`#RRGGBB` or `#RRGGBBAA`). The Viewer uses that hex for swatches and does not convert or recalculate colors. Tokens without `hex` are valid but unresolved (for example `var(--token)` in a theme the compiler could not statically resolve).
 
-When `designSystem` is recognized, a **Design system** section appears between the Product map and Screens. The **Colors** subsection shows a responsive palette for one product theme at a time. Use the theme control to switch between themes such as `default` and `dark`. That control inspects product design tokens; it does not change the Viewer application theme. Each color shows a swatch (with a transparency checkerboard when alpha hex is present), semantic name, hex or **Unresolved**, the original CSS value, and source file. The summary line reports valid token count and distinct resolved colors (exact hex equality) for the selected theme. Multiple tokens may share the same hex; a neutral note may indicate how many tokens use that color. Color similarity and design drift across versions are not analyzed yet.
+When `designSystem` is recognized, a **Design system** section appears between the Product map and Screens. The **Colors** subsection shows a responsive palette for one product theme at a time. Use the theme control to switch between themes such as `default` and `dark`. That control inspects product design tokens; it does not change the Viewer application theme. Each color shows a swatch (with a transparency checkerboard when alpha hex is present), semantic name, and hex or **Unresolved**. The summary line reports valid token count and distinct resolved colors (exact hex equality) for the selected theme. Color similarity and design drift across versions are not analyzed yet.
 
 Malformed `designSystem` data is labeled invalid and stays inspectable. Valid themes and colors beside invalid entries still render. Extra fields on `designSystem`, themes, colors, or `source` are preserved as unrecognized data.
 
+`actions` is optional. When present, it must be an array. A valid action has string `route`, `kind` of `"invoke"` or `"submit"`, and string `source.file`. Optional string `label` is shown when provided (including unusual compiler output). The route must exactly match a valid screen route. Valid actions appear under that screen in Product IR order as compact rows: primary label (or neutral fallbacks **Unlabeled action** / **Submit form** when `label` is absent or empty) and secondary **Invoke** or **Submit**. The Viewer does not know what happens after an action—no effects, API calls, mutations, destinations, or flows are inferred. When the `actions` key is present, the product summary shows a count of valid actions (`0 Actions` when the array is empty). When `actions` is absent, no action count or per-screen actions UI is shown. Duplicate actions are preserved. Extra fields on an action or its `source` are unrecognized data.
+
+Malformed `actions` data is labeled invalid and stays inspectable. Valid actions beside invalid entries still render under screens.
+
 A file is accepted for its JSON and Product IR content. The `.json` extension is only a file-picker hint.
 
-`examples/abbox.json` is a sample snapshot with screens, navigation, and a trimmed design system.
+`examples/abbox.json` is a sample snapshot with screens, navigation, a trimmed design system, and sample actions.
 
 ## Development
 

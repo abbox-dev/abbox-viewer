@@ -33,6 +33,7 @@ const SCREENS_REQUIRED =
 
 const NAVIGATION_ABSENT = { status: "absent" as const };
 const DESIGN_SYSTEM_ABSENT = { status: "absent" as const };
+const ACTIONS_ABSENT = { status: "absent" as const };
 
 function run(value: unknown) {
   return interpret(JSON.stringify(value));
@@ -59,6 +60,7 @@ describe("interpret", () => {
       ],
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -76,6 +78,7 @@ describe("interpret", () => {
       items: [screen("/z", "z.tsx"), screen("/a", "a.tsx")],
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -93,6 +96,7 @@ describe("interpret", () => {
       items: [screen("/programs", "a.tsx"), screen("/programs", "b.tsx")],
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -103,6 +107,7 @@ describe("interpret", () => {
       items: [],
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -113,6 +118,7 @@ describe("interpret", () => {
       items: [screen("", "")],
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -125,6 +131,7 @@ describe("interpret", () => {
       items: [screen(" /x ", " a.tsx ")],
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -155,6 +162,7 @@ describe("interpret", () => {
       items: [screen("/dashboard", "src/routes/dashboard.tsx")],
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [
         { path: "forms", value: [{ name: "login" }] },
         { path: "experimentalThing", value: { enabled: true } },
@@ -179,6 +187,7 @@ describe("interpret", () => {
       items: [screen("/home", "src/home.tsx")],
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [
         { path: "forms", value: [] },
         { path: "screens[0].title", value: "Home" },
@@ -197,6 +206,7 @@ describe("interpret", () => {
       items: [{ kind: "invalid", index: 1, raw: 1 }, screen("/ok", "ok.tsx")],
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [{ path: "screens[1].title", value: "Ok" }],
     });
   });
@@ -271,6 +281,7 @@ describe("interpret", () => {
       ],
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -281,6 +292,7 @@ describe("interpret", () => {
       items: [{ kind: "invalid", index: 1, raw: { route: "/only" } }],
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
     expect(run({ screens: [{ route: "/only", source: { file: 1 } }] })).toEqual(
@@ -295,6 +307,7 @@ describe("interpret", () => {
         ],
         navigation: NAVIGATION_ABSENT,
         designSystem: DESIGN_SYSTEM_ABSENT,
+        actions: ACTIONS_ABSENT,
         unrecognized: [],
       },
     );
@@ -313,6 +326,7 @@ describe("interpret", () => {
         ],
         navigation: NAVIGATION_ABSENT,
         designSystem: DESIGN_SYSTEM_ABSENT,
+        actions: ACTIONS_ABSENT,
         unrecognized: [],
       },
     );
@@ -332,6 +346,7 @@ describe("interpret", () => {
       ],
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -347,6 +362,7 @@ describe("interpret", () => {
       items: [screen("/", "a.tsx")],
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [{ path: "schemaVersion", value: 1 }],
     });
   });
@@ -363,6 +379,7 @@ describe("interpret", () => {
       items: [screen("/", "a.tsx")],
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -384,6 +401,7 @@ describe("interpret", () => {
       items: [],
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -428,6 +446,7 @@ describe("interpret", () => {
         ],
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -450,6 +469,7 @@ describe("interpret", () => {
       items: [screen("/", "a.tsx")],
       navigation: { status: "present", items: [] },
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -469,6 +489,7 @@ describe("interpret", () => {
         raw: "nope",
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -493,6 +514,7 @@ describe("interpret", () => {
         ],
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -524,6 +546,7 @@ describe("interpret", () => {
         ],
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -545,6 +568,7 @@ describe("interpret", () => {
         items: [{ kind: "valid", from: "/", to: "/b" }],
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [{ path: "navigation[0].label", value: "go" }],
     });
   });
@@ -572,6 +596,7 @@ describe("interpret", () => {
         ],
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -594,6 +619,7 @@ describe("interpret", () => {
         items: [{ kind: "valid", from: "/", to: "/b" }],
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [{ path: "forms", value: [] }],
     });
   });
@@ -615,6 +641,7 @@ describe("interpret", () => {
         ],
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
+      actions: ACTIONS_ABSENT,
       unrecognized: [],
     });
   });
@@ -651,6 +678,7 @@ describe("interpret", () => {
         items: [screen("/", "a.tsx")],
         navigation: NAVIGATION_ABSENT,
         designSystem: { status: "present", themes: [] },
+        actions: ACTIONS_ABSENT,
         unrecognized: [],
       });
     });
@@ -729,6 +757,7 @@ describe("interpret", () => {
             },
           ],
         },
+        actions: ACTIONS_ABSENT,
         unrecognized: [],
       });
     });
@@ -893,6 +922,7 @@ describe("interpret", () => {
             value: 1,
           },
         ],
+        actions: ACTIONS_ABSENT,
       });
     });
 
@@ -965,6 +995,226 @@ describe("interpret", () => {
       expect(
         validColorTokens(darkTheme).filter((token) => token.hex === undefined),
       ).toHaveLength(1);
+    });
+  });
+
+  describe("actions", () => {
+    function validAction(
+      route: string,
+      actionKind: "invoke" | "submit",
+      sourceFile: string,
+      label?: string,
+    ) {
+      return {
+        kind: "valid" as const,
+        route,
+        actionKind,
+        sourceFile,
+        ...(label !== undefined ? { label } : {}),
+      };
+    }
+
+    it("treats missing actions as absent", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+      });
+      expect(result.ok && result.actions).toEqual(ACTIONS_ABSENT);
+    });
+
+    it("loads an empty actions array", () => {
+      expect(
+        run({
+          screens: [{ route: "/", source: { file: "a.tsx" } }],
+          actions: [],
+        }),
+      ).toEqual({
+        ok: true,
+        items: [screen("/", "a.tsx")],
+        navigation: NAVIGATION_ABSENT,
+        designSystem: DESIGN_SYSTEM_ABSENT,
+        actions: { status: "present", items: [] },
+        unrecognized: [],
+      });
+    });
+
+    it("parses labeled invoke, unlabeled invoke, and submit", () => {
+      expect(
+        run({
+          screens: [{ route: "/", source: { file: "a.tsx" } }],
+          actions: [
+            {
+              route: "/",
+              kind: "invoke",
+              label: "Save",
+              source: { file: "a.tsx" },
+            },
+            {
+              route: "/",
+              kind: "invoke",
+              source: { file: "a.tsx" },
+            },
+            {
+              route: "/",
+              kind: "submit",
+              source: { file: "a.tsx" },
+            },
+          ],
+        }),
+      ).toEqual({
+        ok: true,
+        items: [screen("/", "a.tsx")],
+        navigation: NAVIGATION_ABSENT,
+        designSystem: DESIGN_SYSTEM_ABSENT,
+        actions: {
+          status: "present",
+          items: [
+            validAction("/", "invoke", "a.tsx", "Save"),
+            validAction("/", "invoke", "a.tsx"),
+            validAction("/", "submit", "a.tsx"),
+          ],
+        },
+        unrecognized: [],
+      });
+    });
+
+    it("preserves empty-string label on valid action", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        actions: [
+          {
+            route: "/",
+            kind: "invoke",
+            label: "",
+            source: { file: "a.tsx" },
+          },
+        ],
+      });
+      expect(result.ok && result.actions).toEqual({
+        status: "present",
+        items: [validAction("/", "invoke", "a.tsx", "")],
+      });
+    });
+
+    it("rejects unknown route and unknown kind", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        actions: [
+          {
+            route: "/ghost",
+            kind: "invoke",
+            source: { file: "a.tsx" },
+          },
+          {
+            route: "/",
+            kind: "tap",
+            source: { file: "a.tsx" },
+          },
+        ],
+      });
+      expect(result.ok && result.actions).toEqual({
+        status: "present",
+        items: [
+          {
+            kind: "invalid",
+            index: 1,
+            raw: {
+              route: "/ghost",
+              kind: "invoke",
+              source: { file: "a.tsx" },
+            },
+          },
+          {
+            kind: "invalid",
+            index: 2,
+            raw: { route: "/", kind: "tap", source: { file: "a.tsx" } },
+          },
+        ],
+      });
+    });
+
+    it("rejects malformed actions container", () => {
+      expect(
+        run({
+          screens: [{ route: "/", source: { file: "a.tsx" } }],
+          actions: null,
+        }),
+      ).toMatchObject({
+        ok: true,
+        actions: {
+          status: "invalid",
+          message: "actions must be an array.",
+          raw: null,
+        },
+      });
+    });
+
+    it("preserves duplicate actions and unknown fields", () => {
+      expect(
+        run({
+          screens: [{ route: "/", source: { file: "a.tsx" } }],
+          actions: [
+            {
+              route: "/",
+              kind: "invoke",
+              label: "Save",
+              source: { file: "a.tsx", line: 1 },
+              effect: { type: "api" },
+            },
+            {
+              route: "/",
+              kind: "invoke",
+              label: "Save",
+              source: { file: "a.tsx" },
+            },
+          ],
+        }),
+      ).toEqual({
+        ok: true,
+        items: [screen("/", "a.tsx")],
+        navigation: NAVIGATION_ABSENT,
+        designSystem: DESIGN_SYSTEM_ABSENT,
+        actions: {
+          status: "present",
+          items: [
+            validAction("/", "invoke", "a.tsx", "Save"),
+            validAction("/", "invoke", "a.tsx", "Save"),
+          ],
+        },
+        unrecognized: [
+          { path: "actions[0].effect", value: { type: "api" } },
+          { path: "actions[0].source.line", value: 1 },
+        ],
+      });
+    });
+
+    it("rejects invalid label type and malformed source", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        actions: [
+          { route: "/", kind: "invoke", label: 1, source: { file: "a.tsx" } },
+          { route: "/", kind: "invoke", source: "nope" },
+        ],
+      });
+      expect(result.ok && result.actions).toEqual({
+        status: "present",
+        items: [
+          {
+            kind: "invalid",
+            index: 1,
+            raw: {
+              route: "/",
+              kind: "invoke",
+              label: 1,
+              source: { file: "a.tsx" },
+            },
+          },
+          {
+            kind: "invalid",
+            index: 2,
+            raw: { route: "/", kind: "invoke", source: "nope" },
+          },
+        ],
+      });
     });
   });
 });

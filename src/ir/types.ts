@@ -79,6 +79,29 @@ export type DesignSystemField =
   | { status: "invalid"; message: string; raw: JsonValue }
   | { status: "present"; themes: ThemeItem[] };
 
+export type ActionKind = "invoke" | "submit";
+
+export type ValidActionItem = {
+  kind: "valid";
+  route: string;
+  actionKind: ActionKind;
+  sourceFile: string;
+  label?: string;
+};
+
+export type InvalidActionItem = {
+  kind: "invalid";
+  index: number;
+  raw: JsonValue;
+};
+
+export type ActionItem = ValidActionItem | InvalidActionItem;
+
+export type ActionsField =
+  | { status: "absent" }
+  | { status: "invalid"; message: string; raw: JsonValue }
+  | { status: "present"; items: ActionItem[] };
+
 export type UnreadableResult = {
   ok: false;
   kind: "unreadable";
@@ -98,6 +121,7 @@ export type LoadedResult = {
   items: ScreenItem[];
   navigation: NavigationField;
   designSystem: DesignSystemField;
+  actions: ActionsField;
   schemaVersion?: "1";
   unrecognized: UnrecognizedEntry[];
 };

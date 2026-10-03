@@ -1,6 +1,9 @@
 import { isCompilerHex } from "./designSystemHex";
 import { knownScreenRoutes } from "./navigationView";
 import type {
+  ActionItem,
+  ActionKind,
+  ActionsField,
   ColorToken,
   DesignSystemField,
   InterpretResult,
@@ -11,6 +14,7 @@ import type {
   NavigationItem,
   ThemeItem,
   UnrecognizedEntry,
+  ValidActionItem,
   ValidColorToken,
   ValidNavigationItem,
   ValidScreenItem,
@@ -30,6 +34,7 @@ const DESIGN_SYSTEM_MUST_BE_OBJECT = "designSystem must be an object.";
 const DESIGN_SYSTEM_THEMES_REQUIRED = "designSystem.themes is required.";
 const DESIGN_SYSTEM_THEMES_MUST_BE_ARRAY =
   "designSystem.themes must be an array.";
+const ACTIONS_MUST_BE_ARRAY = "actions must be an array.";
 
 const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
 
@@ -58,6 +63,8 @@ export function interpret(text: string): InterpretResult {
   let navigationValue: JsonValue | undefined;
   let hasDesignSystem = false;
   let designSystemValue: JsonValue | undefined;
+  let hasActions = false;
+  let actionsValue: JsonValue | undefined;
   let schemaVersion: "1" | undefined;
 
   for (const [key, value] of entriesOf(root)) {
@@ -82,6 +89,11 @@ export function interpret(text: string): InterpretResult {
     if (key === "designSystem") {
       hasDesignSystem = true;
       designSystemValue = value;
+      continue;
+    }
+    if (key === "actions") {
+      hasActions = true;
+      actionsValue = value;
       continue;
     }
     unrecognized.push({ path: formatKey(key), value });
@@ -130,14 +142,120 @@ export function interpret(text: string): InterpretResult {
     unrecognized,
   );
 
+  const routes = knownScreenRoutes(items);
+  const actions = parseActions(hasActions, actionsValue, routes, unrecognized);
+
   return {
     ok: true,
     items,
     navigation,
     designSystem,
+    actions,
     ...(schemaVersion !== undefined ? { schemaVersion } : {}),
     unrecognized,
   };
+}
+
+function parseActions(
+  hasActions: boolean,
+  actionsValue: JsonValue | undefined,
+  routes: Set<string>,
+  unrecognized: UnrecognizedEntry[],
+): ActionsField {
+  if (!hasActions || actionsValue === undefined) {
+    return { status: "absent" };
+  }
+
+  if (!Array.isArray(actionsValue)) {
+    return {
+      status: "invalid",
+      message: ACTIONS_MUST_BE_ARRAY,
+      raw: actionsValue,
+    };
+  }
+
+  const items: ActionItem[] = [];
+  actionsValue.forEach((element, index) => {
+    items.push(validateActionEntry(element, index, routes, unrecognized));
+  });
+
+  return { status: "present", items };
+}
+
+function validateActionEntry(
+  value: JsonValue,
+  index: number,
+  routes: Set<string>,
+  unrecognized: UnrecognizedEntry[],
+): ValidActionItem | { kind: "invalid"; index: number; raw: JsonValue } {
+  if (!isJsonObject(value)) {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  const record = ownRecord(value);
+  const route = record.route;
+  const kindRaw = record.kind;
+  const source = record.source;
+  const labelRaw = record.label;
+
+  if (typeof route !== "string") {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  if (kindRaw !== "invoke" && kindRaw !== "submit") {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  if (source === undefined || !isJsonObject(source)) {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  const sourceRecord = ownRecord(source);
+  const file = sourceRecord.file;
+  if (typeof file !== "string") {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  if (labelRaw !== undefined && typeof labelRaw !== "string") {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  if (!routes.has(route)) {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  const base = `actions[${index}]`;
+  for (const [key, extra] of entriesOf(record)) {
+    if (
+      key === "route" ||
+      key === "kind" ||
+      key === "label" ||
+      key === "source"
+    ) {
+      continue;
+    }
+    unrecognized.push({ path: joinPath(base, key), value: extra });
+  }
+  for (const [key, extra] of entriesOf(sourceRecord)) {
+    if (key === "file") {
+      continue;
+    }
+    unrecognized.push({
+      path: joinPath(`${base}.source`, key),
+      value: extra,
+    });
+  }
+
+  const action: ValidActionItem = {
+    kind: "valid",
+    route,
+    actionKind: kindRaw as ActionKind,
+    sourceFile: file,
+  };
+  if (typeof labelRaw === "string") {
+    action.label = labelRaw;
+  }
+  return action;
 }
 
 function parseDesignSystem(
