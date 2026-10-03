@@ -44,6 +44,41 @@ export type NavigationField =
   | { status: "invalid"; message: string; raw: JsonValue }
   | { status: "present"; items: NavigationItem[] };
 
+export type ValidColorToken = {
+  kind: "valid";
+  name: string;
+  value: string;
+  sourceFile: string;
+  hex?: string;
+};
+
+export type InvalidColorToken = {
+  kind: "invalid";
+  index: number;
+  raw: JsonValue;
+};
+
+export type ColorToken = ValidColorToken | InvalidColorToken;
+
+export type ValidTheme = {
+  kind: "valid";
+  name: string;
+  colors: ColorToken[];
+};
+
+export type InvalidTheme = {
+  kind: "invalid";
+  index: number;
+  raw: JsonValue;
+};
+
+export type ThemeItem = ValidTheme | InvalidTheme;
+
+export type DesignSystemField =
+  | { status: "absent" }
+  | { status: "invalid"; message: string; raw: JsonValue }
+  | { status: "present"; themes: ThemeItem[] };
+
 export type UnreadableResult = {
   ok: false;
   kind: "unreadable";
@@ -62,6 +97,7 @@ export type LoadedResult = {
   ok: true;
   items: ScreenItem[];
   navigation: NavigationField;
+  designSystem: DesignSystemField;
   schemaVersion?: "1";
   unrecognized: UnrecognizedEntry[];
 };

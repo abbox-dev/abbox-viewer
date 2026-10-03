@@ -28,9 +28,15 @@ Malformed `navigation` data (including entries whose routes are not on a valid s
 
 When the `navigation` key is present, a **Product map** section appears above the Screens list. It shows valid screen routes and discovered connections as a simple row-based map with directed edges. Screens with no incoming or outgoing valid navigation appear under **No discovered connections**. The map does not infer links. When `navigation` is absent, no Product map is shown. For very large snapshots (many screens or connections), the map is replaced by a short text summary; the Screens list remains the detailed view. A textual **Connections (discovered)** list accompanies the map for accessibility.
 
+`designSystem` is optional. When present, it must be an object with a `themes` array. A valid theme has a string `name` and a `colors` array. A valid color token has string `name`, string `value`, and string `source.file`. The compiler may attach optional canonical `hex` (`#RRGGBB` or `#RRGGBBAA`). The Viewer uses that hex for swatches and does not convert or recalculate colors. Tokens without `hex` are valid but unresolved (for example `var(--token)` in a theme the compiler could not statically resolve).
+
+When `designSystem` is recognized, a **Design system** section appears between the Product map and Screens. The **Colors** subsection shows a responsive palette for one product theme at a time. Use the theme control to switch between themes such as `default` and `dark`. That control inspects product design tokens; it does not change the Viewer application theme. Each color shows a swatch (with a transparency checkerboard when alpha hex is present), semantic name, hex or **Unresolved**, the original CSS value, and source file. The summary line reports valid token count and distinct resolved colors (exact hex equality) for the selected theme. Multiple tokens may share the same hex; a neutral note may indicate how many tokens use that color. Color similarity and design drift across versions are not analyzed yet.
+
+Malformed `designSystem` data is labeled invalid and stays inspectable. Valid themes and colors beside invalid entries still render. Extra fields on `designSystem`, themes, colors, or `source` are preserved as unrecognized data.
+
 A file is accepted for its JSON and Product IR content. The `.json` extension is only a file-picker hint.
 
-`examples/abbox.json` is a sample snapshot with screens and navigation.
+`examples/abbox.json` is a sample snapshot with screens, navigation, and a trimmed design system.
 
 ## Development
 
