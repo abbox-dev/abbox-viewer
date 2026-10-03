@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
+import {
+  colorStats,
+  validColorTokens,
+  validThemes,
+} from "../src/ir/designSystemView";
 import { interpret } from "../src/ir/interpret";
+import { connectionCount } from "../src/ir/navigationView";
 import type { ValidScreenItem } from "../src/ir/types";
+import designSystemColors from "./fixtures/design-system-colors.json" with {
+  type: "json",
+};
 import emptyScreens from "./fixtures/empty-screens.json" with { type: "json" };
 import malformedScreens from "./fixtures/malformed-screens.json" with {
   type: "json",
@@ -23,6 +32,7 @@ const SCREENS_REQUIRED =
   "This file is not a valid Product IR. screens is required.";
 
 const NAVIGATION_ABSENT = { status: "absent" as const };
+const DESIGN_SYSTEM_ABSENT = { status: "absent" as const };
 
 function run(value: unknown) {
   return interpret(JSON.stringify(value));
@@ -48,6 +58,7 @@ describe("interpret", () => {
         screen("/saved", "src/routes/saved.tsx"),
       ],
       navigation: NAVIGATION_ABSENT,
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -64,6 +75,7 @@ describe("interpret", () => {
       ok: true,
       items: [screen("/z", "z.tsx"), screen("/a", "a.tsx")],
       navigation: NAVIGATION_ABSENT,
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -80,6 +92,7 @@ describe("interpret", () => {
       ok: true,
       items: [screen("/programs", "a.tsx"), screen("/programs", "b.tsx")],
       navigation: NAVIGATION_ABSENT,
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -89,6 +102,7 @@ describe("interpret", () => {
       ok: true,
       items: [],
       navigation: NAVIGATION_ABSENT,
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -98,6 +112,7 @@ describe("interpret", () => {
       ok: true,
       items: [screen("", "")],
       navigation: NAVIGATION_ABSENT,
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -109,6 +124,7 @@ describe("interpret", () => {
       ok: true,
       items: [screen(" /x ", " a.tsx ")],
       navigation: NAVIGATION_ABSENT,
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -138,6 +154,7 @@ describe("interpret", () => {
       ok: true,
       items: [screen("/dashboard", "src/routes/dashboard.tsx")],
       navigation: NAVIGATION_ABSENT,
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [
         { path: "forms", value: [{ name: "login" }] },
         { path: "experimentalThing", value: { enabled: true } },
@@ -161,6 +178,7 @@ describe("interpret", () => {
       ok: true,
       items: [screen("/home", "src/home.tsx")],
       navigation: NAVIGATION_ABSENT,
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [
         { path: "forms", value: [] },
         { path: "screens[0].title", value: "Home" },
@@ -178,6 +196,7 @@ describe("interpret", () => {
       ok: true,
       items: [{ kind: "invalid", index: 1, raw: 1 }, screen("/ok", "ok.tsx")],
       navigation: NAVIGATION_ABSENT,
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [{ path: "screens[1].title", value: "Ok" }],
     });
   });
@@ -251,6 +270,7 @@ describe("interpret", () => {
         },
       ],
       navigation: NAVIGATION_ABSENT,
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -260,6 +280,7 @@ describe("interpret", () => {
       ok: true,
       items: [{ kind: "invalid", index: 1, raw: { route: "/only" } }],
       navigation: NAVIGATION_ABSENT,
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
     expect(run({ screens: [{ route: "/only", source: { file: 1 } }] })).toEqual(
@@ -273,6 +294,7 @@ describe("interpret", () => {
           },
         ],
         navigation: NAVIGATION_ABSENT,
+        designSystem: DESIGN_SYSTEM_ABSENT,
         unrecognized: [],
       },
     );
@@ -290,6 +312,7 @@ describe("interpret", () => {
           },
         ],
         navigation: NAVIGATION_ABSENT,
+        designSystem: DESIGN_SYSTEM_ABSENT,
         unrecognized: [],
       },
     );
@@ -308,6 +331,7 @@ describe("interpret", () => {
         },
       ],
       navigation: NAVIGATION_ABSENT,
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -322,6 +346,7 @@ describe("interpret", () => {
       ok: true,
       items: [screen("/", "a.tsx")],
       navigation: NAVIGATION_ABSENT,
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [{ path: "schemaVersion", value: 1 }],
     });
   });
@@ -337,6 +362,7 @@ describe("interpret", () => {
       schemaVersion: "1",
       items: [screen("/", "a.tsx")],
       navigation: NAVIGATION_ABSENT,
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -357,6 +383,7 @@ describe("interpret", () => {
       ok: true,
       items: [],
       navigation: NAVIGATION_ABSENT,
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -400,6 +427,7 @@ describe("interpret", () => {
           { kind: "valid", from: "/programs/$programId", to: "/programs" },
         ],
       },
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -421,6 +449,7 @@ describe("interpret", () => {
       ok: true,
       items: [screen("/", "a.tsx")],
       navigation: { status: "present", items: [] },
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -439,6 +468,7 @@ describe("interpret", () => {
         message: "navigation must be an array.",
         raw: "nope",
       },
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -462,6 +492,7 @@ describe("interpret", () => {
           },
         ],
       },
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -492,6 +523,7 @@ describe("interpret", () => {
           },
         ],
       },
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -512,6 +544,7 @@ describe("interpret", () => {
         status: "present",
         items: [{ kind: "valid", from: "/", to: "/b" }],
       },
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [{ path: "navigation[0].label", value: "go" }],
     });
   });
@@ -538,6 +571,7 @@ describe("interpret", () => {
           { kind: "valid", from: "/", to: "/b" },
         ],
       },
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
     });
   });
@@ -559,6 +593,7 @@ describe("interpret", () => {
         status: "present",
         items: [{ kind: "valid", from: "/", to: "/b" }],
       },
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [{ path: "forms", value: [] }],
     });
   });
@@ -579,7 +614,357 @@ describe("interpret", () => {
           { kind: "invalid", index: 2, raw: { from: 1, to: "/" } },
         ],
       },
+      designSystem: DESIGN_SYSTEM_ABSENT,
       unrecognized: [],
+    });
+  });
+
+  describe("designSystem", () => {
+    const color = (
+      name: string,
+      value: string,
+      file: string,
+      hex?: string,
+    ) => ({
+      kind: "valid" as const,
+      name,
+      value,
+      sourceFile: file,
+      ...(hex !== undefined ? { hex } : {}),
+    });
+
+    it("treats missing designSystem as absent", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+      });
+      expect(result.ok && result.designSystem).toEqual(DESIGN_SYSTEM_ABSENT);
+    });
+
+    it("loads empty themes array", () => {
+      expect(
+        run({
+          screens: [{ route: "/", source: { file: "a.tsx" } }],
+          designSystem: { themes: [] },
+        }),
+      ).toEqual({
+        ok: true,
+        items: [screen("/", "a.tsx")],
+        navigation: NAVIGATION_ABSENT,
+        designSystem: { status: "present", themes: [] },
+        unrecognized: [],
+      });
+    });
+
+    it("parses default and dark themes with resolved and unresolved colors", () => {
+      expect(
+        run({
+          screens: [{ route: "/", source: { file: "a.tsx" } }],
+          designSystem: {
+            themes: [
+              {
+                name: "default",
+                colors: [
+                  {
+                    name: "primary",
+                    value: "oklch(0.46 0.13 296)",
+                    hex: "#604597",
+                    source: { file: "src/styles.css" },
+                  },
+                  {
+                    name: "overlay",
+                    value: "oklch(0.1 0.02 280 / 0.45)",
+                    hex: "#11101A73",
+                    source: { file: "src/styles.css" },
+                  },
+                ],
+              },
+              {
+                name: "dark",
+                colors: [
+                  {
+                    name: "accent-strong",
+                    value: "var(--accent-strong)",
+                    source: { file: "src/styles.css" },
+                  },
+                ],
+              },
+            ],
+          },
+        }),
+      ).toEqual({
+        ok: true,
+        items: [screen("/", "a.tsx")],
+        navigation: NAVIGATION_ABSENT,
+        designSystem: {
+          status: "present",
+          themes: [
+            {
+              kind: "valid",
+              name: "default",
+              colors: [
+                color(
+                  "primary",
+                  "oklch(0.46 0.13 296)",
+                  "src/styles.css",
+                  "#604597",
+                ),
+                color(
+                  "overlay",
+                  "oklch(0.1 0.02 280 / 0.45)",
+                  "src/styles.css",
+                  "#11101A73",
+                ),
+              ],
+            },
+            {
+              kind: "valid",
+              name: "dark",
+              colors: [
+                color(
+                  "accent-strong",
+                  "var(--accent-strong)",
+                  "src/styles.css",
+                ),
+              ],
+            },
+          ],
+        },
+        unrecognized: [],
+      });
+    });
+
+    it("accepts arbitrary theme name strings", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        designSystem: {
+          themes: [
+            {
+              name: "brand",
+              colors: [
+                {
+                  name: "primary",
+                  value: "#604597",
+                  hex: "#604597",
+                  source: { file: "src/styles.css" },
+                },
+              ],
+            },
+          ],
+        },
+      });
+      expect(result.ok && result.designSystem).toEqual({
+        status: "present",
+        themes: [
+          {
+            kind: "valid",
+            name: "brand",
+            colors: [color("primary", "#604597", "src/styles.css", "#604597")],
+          },
+        ],
+      });
+    });
+
+    it("rejects invalid compiler hex on a color entry", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        designSystem: {
+          themes: [
+            {
+              name: "default",
+              colors: [
+                {
+                  name: "bad",
+                  value: "red",
+                  hex: "not-hex",
+                  source: { file: "src/styles.css" },
+                },
+              ],
+            },
+          ],
+        },
+      });
+      expect(result.ok && result.designSystem).toEqual({
+        status: "present",
+        themes: [
+          {
+            kind: "valid",
+            name: "default",
+            colors: [
+              {
+                kind: "invalid",
+                index: 1,
+                raw: {
+                  name: "bad",
+                  value: "red",
+                  hex: "not-hex",
+                  source: { file: "src/styles.css" },
+                },
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    it("rejects malformed designSystem container values", () => {
+      expect(
+        run({
+          screens: [{ route: "/", source: { file: "a.tsx" } }],
+          designSystem: null,
+        }),
+      ).toMatchObject({
+        ok: true,
+        designSystem: {
+          status: "invalid",
+          message: "designSystem must be an object.",
+          raw: null,
+        },
+      });
+      expect(
+        run({
+          screens: [{ route: "/", source: { file: "a.tsx" } }],
+          designSystem: {},
+        }),
+      ).toMatchObject({
+        ok: true,
+        designSystem: {
+          status: "invalid",
+          message: "designSystem.themes is required.",
+        },
+      });
+      expect(
+        run({
+          screens: [{ route: "/", source: { file: "a.tsx" } }],
+          designSystem: { themes: "wrong" },
+        }),
+      ).toMatchObject({
+        ok: true,
+        designSystem: {
+          status: "invalid",
+          message: "designSystem.themes must be an array.",
+          raw: "wrong",
+        },
+      });
+    });
+
+    it("preserves nested unrecognized fields on designSystem", () => {
+      expect(
+        run({
+          screens: [{ route: "/", source: { file: "a.tsx" } }],
+          designSystem: {
+            version: 2,
+            themes: [
+              {
+                name: "default",
+                extra: true,
+                colors: [
+                  {
+                    name: "primary",
+                    value: "x",
+                    hex: "#604597",
+                    note: "n",
+                    source: { file: "src/styles.css", line: 1 },
+                  },
+                ],
+              },
+            ],
+          },
+        }),
+      ).toEqual({
+        ok: true,
+        items: [screen("/", "a.tsx")],
+        navigation: NAVIGATION_ABSENT,
+        designSystem: {
+          status: "present",
+          themes: [
+            {
+              kind: "valid",
+              name: "default",
+              colors: [color("primary", "x", "src/styles.css", "#604597")],
+            },
+          ],
+        },
+        unrecognized: [
+          { path: "designSystem.version", value: 2 },
+          { path: "designSystem.themes[0].extra", value: true },
+          { path: "designSystem.themes[0].colors[0].note", value: "n" },
+          {
+            path: "designSystem.themes[0].colors[0].source.line",
+            value: 1,
+          },
+        ],
+      });
+    });
+
+    it("keeps duplicate hex on separate valid tokens", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        designSystem: {
+          themes: [
+            {
+              name: "default",
+              colors: [
+                {
+                  name: "card",
+                  value: "white",
+                  hex: "#FFFFFF",
+                  source: { file: "a.css" },
+                },
+                {
+                  name: "popover",
+                  value: "#fff",
+                  hex: "#FFFFFF",
+                  source: { file: "a.css" },
+                },
+              ],
+            },
+          ],
+        },
+      });
+      expect(result.ok && result.designSystem).toEqual({
+        status: "present",
+        themes: [
+          {
+            kind: "valid",
+            name: "default",
+            colors: [
+              color("card", "white", "a.css", "#FFFFFF"),
+              color("popover", "#fff", "a.css", "#FFFFFF"),
+            ],
+          },
+        ],
+      });
+    });
+
+    it("loads screens, navigation, and designSystem in one synthetic snapshot", () => {
+      const result = interpret(JSON.stringify(designSystemColors));
+      expect(result.ok).toBe(true);
+      if (!result.ok) {
+        return;
+      }
+
+      expect(result.items.filter((item) => item.kind === "valid")).toHaveLength(
+        2,
+      );
+      expect(connectionCount(result.navigation)).toBe(1);
+      expect(result.designSystem.status).toBe("present");
+
+      const themes = validThemes(result.designSystem);
+      expect(themes.map((theme) => theme.name)).toEqual(["default", "dark"]);
+
+      const defaultTheme = themes[0];
+      const darkTheme = themes[1];
+      expect(defaultTheme).toBeDefined();
+      expect(darkTheme).toBeDefined();
+      if (!defaultTheme || !darkTheme) {
+        return;
+      }
+
+      expect(colorStats(defaultTheme)).toEqual({ tokens: 4, distinct: 3 });
+      expect(colorStats(darkTheme)).toEqual({ tokens: 2, distinct: 1 });
+      expect(
+        validColorTokens(darkTheme).filter((token) => token.hex === undefined),
+      ).toHaveLength(1);
     });
   });
 });

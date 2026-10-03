@@ -8,48 +8,16 @@
       }
     },
     {
-      "route": "/investors/$investorId",
+      "route": "/about",
       "source": {
-        "file": "src/routes/investors/$investorId.tsx"
-      }
-    },
-    {
-      "route": "/programs/",
-      "source": {
-        "file": "src/routes/programs.index.tsx"
-      }
-    },
-    {
-      "route": "/programs",
-      "source": {
-        "file": "src/routes/programs.tsx"
-      }
-    },
-    {
-      "route": "/programs/$programId",
-      "source": {
-        "file": "src/routes/programs/$programId.tsx"
-      }
-    },
-    {
-      "route": "/saved",
-      "source": {
-        "file": "src/routes/saved.tsx"
+        "file": "src/routes/about.tsx"
       }
     }
   ],
   "navigation": [
     {
       "from": "/",
-      "to": "/investors/$investorId"
-    },
-    {
-      "from": "/investors/$investorId",
-      "to": "/"
-    },
-    {
-      "from": "/programs/$programId",
-      "to": "/programs"
+      "to": "/about"
     }
   ],
   "designSystem": {
@@ -66,17 +34,17 @@
             }
           },
           {
-            "name": "background",
-            "value": "oklch(0.98 0.01 90)",
-            "hex": "#FBF7F2",
+            "name": "card",
+            "value": "#fff",
+            "hex": "#FFFFFF",
             "source": {
               "file": "src/styles.css"
             }
           },
           {
-            "name": "foreground",
-            "value": "oklch(0.2 0.02 280)",
-            "hex": "#1D1D26",
+            "name": "surface",
+            "value": "white",
+            "hex": "#FFFFFF",
             "source": {
               "file": "src/styles.css"
             }
@@ -98,14 +66,6 @@
             "name": "background",
             "value": "oklch(0.12 0.03 260)",
             "hex": "#020618",
-            "source": {
-              "file": "src/styles.css"
-            }
-          },
-          {
-            "name": "foreground",
-            "value": "oklch(0.97 0.01 260)",
-            "hex": "#F8FAFC",
             "source": {
               "file": "src/styles.css"
             }

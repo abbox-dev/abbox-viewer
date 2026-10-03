@@ -1,14 +1,20 @@
+import { isCompilerHex } from "./designSystemHex";
 import { knownScreenRoutes } from "./navigationView";
 import type {
+  ColorToken,
+  DesignSystemField,
   InterpretResult,
   InvalidNavigationItem,
   InvalidScreenItem,
   JsonValue,
   NavigationField,
   NavigationItem,
+  ThemeItem,
   UnrecognizedEntry,
+  ValidColorToken,
   ValidNavigationItem,
   ValidScreenItem,
+  ValidTheme,
 } from "./types";
 
 const MAX_FILE_BYTES = 1_000_000;
@@ -20,6 +26,10 @@ const SCREENS_REQUIRED =
   "This file is not a valid Product IR. screens is required.";
 const SCREENS_MUST_BE_ARRAY = "screens must be an array.";
 const NAVIGATION_MUST_BE_ARRAY = "navigation must be an array.";
+const DESIGN_SYSTEM_MUST_BE_OBJECT = "designSystem must be an object.";
+const DESIGN_SYSTEM_THEMES_REQUIRED = "designSystem.themes is required.";
+const DESIGN_SYSTEM_THEMES_MUST_BE_ARRAY =
+  "designSystem.themes must be an array.";
 
 const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
 
@@ -46,6 +56,8 @@ export function interpret(text: string): InterpretResult {
   let screensValue: JsonValue | undefined;
   let hasNavigation = false;
   let navigationValue: JsonValue | undefined;
+  let hasDesignSystem = false;
+  let designSystemValue: JsonValue | undefined;
   let schemaVersion: "1" | undefined;
 
   for (const [key, value] of entriesOf(root)) {
@@ -65,6 +77,11 @@ export function interpret(text: string): InterpretResult {
       } else {
         unrecognized.push({ path: formatKey(key), value });
       }
+      continue;
+    }
+    if (key === "designSystem") {
+      hasDesignSystem = true;
+      designSystemValue = value;
       continue;
     }
     unrecognized.push({ path: formatKey(key), value });
@@ -107,13 +124,175 @@ export function interpret(text: string): InterpretResult {
     unrecognized,
   );
 
+  const designSystem = parseDesignSystem(
+    hasDesignSystem,
+    designSystemValue,
+    unrecognized,
+  );
+
   return {
     ok: true,
     items,
     navigation,
+    designSystem,
     ...(schemaVersion !== undefined ? { schemaVersion } : {}),
     unrecognized,
   };
+}
+
+function parseDesignSystem(
+  hasDesignSystem: boolean,
+  designSystemValue: JsonValue | undefined,
+  unrecognized: UnrecognizedEntry[],
+): DesignSystemField {
+  if (!hasDesignSystem || designSystemValue === undefined) {
+    return { status: "absent" };
+  }
+
+  if (!isJsonObject(designSystemValue)) {
+    return {
+      status: "invalid",
+      message: DESIGN_SYSTEM_MUST_BE_OBJECT,
+      raw: designSystemValue as JsonValue,
+    };
+  }
+
+  const record = ownRecord(designSystemValue);
+  const themesValue = record.themes;
+  if (themesValue === undefined) {
+    return {
+      status: "invalid",
+      message: DESIGN_SYSTEM_THEMES_REQUIRED,
+      raw: designSystemValue,
+    };
+  }
+
+  if (!Array.isArray(themesValue)) {
+    return {
+      status: "invalid",
+      message: DESIGN_SYSTEM_THEMES_MUST_BE_ARRAY,
+      raw: themesValue,
+    };
+  }
+
+  for (const [key, extra] of entriesOf(record)) {
+    if (key === "themes") {
+      continue;
+    }
+    unrecognized.push({
+      path: joinPath("designSystem", key),
+      value: extra,
+    });
+  }
+
+  const themes: ThemeItem[] = [];
+  themesValue.forEach((element, index) => {
+    themes.push(validateTheme(element, index, unrecognized));
+  });
+
+  return { status: "present", themes };
+}
+
+function validateTheme(
+  value: JsonValue,
+  index: number,
+  unrecognized: UnrecognizedEntry[],
+): ValidTheme | { kind: "invalid"; index: number; raw: JsonValue } {
+  if (!isJsonObject(value)) {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  const record = ownRecord(value);
+  const name = record.name;
+  const colorsValue = record.colors;
+  if (typeof name !== "string" || !Array.isArray(colorsValue)) {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  const base = `designSystem.themes[${index}]`;
+  for (const [key, extra] of entriesOf(record)) {
+    if (key === "name" || key === "colors") {
+      continue;
+    }
+    unrecognized.push({ path: joinPath(base, key), value: extra });
+  }
+
+  const colors: ColorToken[] = [];
+  colorsValue.forEach((element, colorIndex) => {
+    colors.push(validateColorToken(element, index, colorIndex, unrecognized));
+  });
+
+  return { kind: "valid", name, colors };
+}
+
+function validateColorToken(
+  value: JsonValue,
+  themeIndex: number,
+  colorIndex: number,
+  unrecognized: UnrecognizedEntry[],
+): ValidColorToken | { kind: "invalid"; index: number; raw: JsonValue } {
+  if (!isJsonObject(value)) {
+    return { kind: "invalid", index: colorIndex + 1, raw: value };
+  }
+
+  const record = ownRecord(value);
+  const name = record.name;
+  const colorValue = record.value;
+  const source = record.source;
+  const hexRaw = record.hex;
+
+  if (typeof name !== "string" || typeof colorValue !== "string") {
+    return { kind: "invalid", index: colorIndex + 1, raw: value };
+  }
+
+  if (source === undefined || !isJsonObject(source)) {
+    return { kind: "invalid", index: colorIndex + 1, raw: value };
+  }
+
+  const sourceRecord = ownRecord(source);
+  const file = sourceRecord.file;
+  if (typeof file !== "string") {
+    return { kind: "invalid", index: colorIndex + 1, raw: value };
+  }
+
+  if (hexRaw !== undefined) {
+    if (typeof hexRaw !== "string" || !isCompilerHex(hexRaw)) {
+      return { kind: "invalid", index: colorIndex + 1, raw: value };
+    }
+  }
+
+  const base = `designSystem.themes[${themeIndex}].colors[${colorIndex}]`;
+  for (const [key, extra] of entriesOf(record)) {
+    if (
+      key === "name" ||
+      key === "value" ||
+      key === "source" ||
+      key === "hex"
+    ) {
+      continue;
+    }
+    unrecognized.push({ path: joinPath(base, key), value: extra });
+  }
+  for (const [key, extra] of entriesOf(sourceRecord)) {
+    if (key === "file") {
+      continue;
+    }
+    unrecognized.push({
+      path: joinPath(`${base}.source`, key),
+      value: extra,
+    });
+  }
+
+  const token: ValidColorToken = {
+    kind: "valid",
+    name,
+    value: colorValue,
+    sourceFile: file,
+  };
+  if (typeof hexRaw === "string") {
+    token.hex = hexRaw;
+  }
+  return token;
 }
 
 function parseNavigation(

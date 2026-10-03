@@ -1,3 +1,4 @@
+import { showDesignSystem } from "../ir/designSystemView";
 import {
   connectionCount,
   showConnectionSummary,
@@ -8,6 +9,7 @@ import type {
   LoadedResult,
   NavigationField,
 } from "../ir/types";
+import { DesignSystemSection } from "./DesignSystemSection";
 import { JsonTree } from "./JsonTree";
 import { ProductMapSection } from "./ProductMapSection";
 import { ScreensSection } from "./ScreensSection";
@@ -58,6 +60,9 @@ export function ProductView({ fileName, result }: ProductViewProps) {
           items={result.items}
           navigation={result.navigation}
         />
+      ) : null}
+      {showDesignSystem(result.designSystem) ? (
+        <DesignSystemSection designSystem={result.designSystem} />
       ) : null}
       <ScreensSection items={result.items} navigation={result.navigation} />
       <InvalidNavigation navigation={result.navigation} />

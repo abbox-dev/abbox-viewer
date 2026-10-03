@@ -2,6 +2,9 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "../src/App";
+import designSystemColors from "./fixtures/design-system-colors.json" with {
+  type: "json",
+};
 import malformedScreens from "./fixtures/malformed-screens.json" with {
   type: "json",
 };
@@ -151,6 +154,81 @@ describe("viewer", () => {
     expect(
       screen.queryByRole("heading", { name: "Unrecognized data" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("shows design system colors with theme switching and duplicate hints", async () => {
+    const user = userEvent.setup();
+    await selectFile(jsonFile("design.json", designSystemColors));
+
+    expect(
+      screen.getByRole("heading", { name: "Design system" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Colors" })).toBeInTheDocument();
+    expect(
+      screen.getByText("4 tokens · 3 distinct colors"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("#604597")).toBeInTheDocument();
+    expect(screen.getAllByText("2 tokens use this color")).toHaveLength(2);
+
+    const overlaySwatch = document.querySelector(
+      ".color-swatch-checkerboard .color-swatch-fill",
+    ) as HTMLElement | null;
+    expect(overlaySwatch?.style.backgroundColor).toBeTruthy();
+
+    const defaultTab = screen.getByRole("tab", { name: "default" });
+    expect(defaultTab).toHaveAttribute("aria-selected", "true");
+
+    await user.click(screen.getByRole("tab", { name: "dark" }));
+    expect(screen.getByRole("tab", { name: "dark" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(screen.getByText("#020618")).toBeInTheDocument();
+    expect(screen.getByText("Unresolved")).toBeInTheDocument();
+    expect(screen.getByText("var(--accent-strong)")).toBeInTheDocument();
+    expect(
+      document.querySelector(".color-swatch-unresolved"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", { name: "Product map" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Screens" }),
+    ).toBeInTheDocument();
+  });
+
+  it("does not show design system when designSystem is absent", async () => {
+    await selectFile(jsonFile("abbox.json", screens));
+    expect(
+      screen.queryByRole("heading", { name: "Design system" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows a single-theme label instead of one tab", async () => {
+    await selectFile(
+      jsonFile("one-theme.json", {
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        designSystem: {
+          themes: [
+            {
+              name: "default",
+              colors: [
+                {
+                  name: "primary",
+                  value: "x",
+                  hex: "#604597",
+                  source: { file: "src/styles.css" },
+                },
+              ],
+            },
+          ],
+        },
+      }),
+    );
+    expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+    expect(screen.getByText("default")).toBeInTheDocument();
+    expect(screen.getByText("1 token · 1 distinct color")).toBeInTheDocument();
   });
 
   it("does not show navigation UI when navigation is absent", async () => {

@@ -340,6 +340,179 @@ button {
   padding-left: 1.1rem;
 }
 
+.design-system {
+  margin-top: 1.75rem;
+}
+
+.design-system-lede {
+  margin-top: 0.35rem;
+}
+
+.design-system-invalid {
+  margin-top: 0.75rem;
+}
+
+.design-system-empty {
+  margin-top: 0.75rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.design-system-theme-label {
+  margin-top: 0.75rem;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.design-system-theme-label .theme-name {
+  color: var(--fg);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.theme-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.theme-tab {
+  appearance: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--fg);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.88rem;
+  padding: 0.35rem 0.75rem;
+}
+
+.theme-tab[aria-selected="true"] {
+  border-color: var(--fg);
+  font-weight: 600;
+}
+
+.theme-tab:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
+.theme-colors-panel {
+  margin-top: 0.85rem;
+}
+
+.theme-colors-panel h4 {
+  font-size: 1rem;
+}
+
+.color-stats {
+  margin-top: 0.25rem;
+}
+
+.color-palette {
+  list-style: none;
+  margin: 0.65rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+}
+
+.color-token {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.55rem 0.6rem 0.65rem;
+}
+
+.color-swatch {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  height: 3.25rem;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.color-swatch-fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.color-swatch-checkerboard {
+  background-color: var(--surface);
+  background-image:
+    linear-gradient(45deg, var(--line) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--line) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--line) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--line) 75%);
+  background-position:
+    0 0,
+    0 6px,
+    6px -6px,
+    -6px 0;
+  background-size: 12px 12px;
+}
+
+.color-swatch-unresolved {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--line),
+    var(--line) 2px,
+    transparent 2px,
+    transparent 8px
+  );
+  background-color: var(--surface);
+}
+
+.color-token-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-top: 0.45rem;
+  overflow-wrap: anywhere;
+}
+
+.color-token-hex,
+.color-token-unresolved {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  margin-top: 0.15rem;
+  overflow-wrap: anywhere;
+}
+
+.color-token-unresolved {
+  color: var(--muted);
+}
+
+.color-token-value,
+.color-token-file {
+  font-size: 0.75rem;
+  margin-top: 0.2rem;
+  overflow-wrap: anywhere;
+}
+
+.color-token-reuse {
+  color: var(--muted);
+  font-size: 0.72rem;
+  margin-top: 0.25rem;
+}
+
+.invalid-themes,
+.invalid-colors {
+  margin-top: 0.85rem;
+}
+
+.invalid-themes-list,
+.invalid-colors-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
 @media (max-width: 640px) {
   main {
     --page-margin-x: 1.25rem;
