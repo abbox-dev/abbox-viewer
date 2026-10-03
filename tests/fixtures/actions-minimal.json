@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1",
+  "screens": [
+    {
+      "route": "/",
+      "source": {
+        "file": "src/routes/index.tsx"
+      }
+    },
+    {
+      "route": "/settings",
+      "source": {
+        "file": "src/routes/settings.tsx"
+      }
+    }
+  ],
+  "navigation": [
+    {
+      "from": "/",
+      "to": "/settings"
+    }
+  ],
+  "actions": [
+    {
+      "route": "/",
+      "kind": "invoke",
+      "label": "Add item",
+      "source": {
+        "file": "src/routes/index.tsx"
+      }
+    },
+    {
+      "route": "/",
+      "kind": "invoke",
+      "source": {
+        "file": "src/routes/index.tsx"
+      }
+    },
+    {
+      "route": "/",
+      "kind": "submit",
+      "source": {
+        "file": "src/routes/index.tsx"
+      }
+    },
+    {
+      "route": "/",
+      "kind": "invoke",
+      "label": ":",
+      "source": {
+        "file": "src/routes/index.tsx"
+      }
+    }
+  ]
+}

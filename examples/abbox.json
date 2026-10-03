@@ -120,5 +120,30 @@
         ]
       }
     ]
-  }
+  },
+  "actions": [
+    {
+      "route": "/",
+      "kind": "invoke",
+      "label": "Open filters",
+      "source": {
+        "file": "src/routes/index.tsx"
+      }
+    },
+    {
+      "route": "/saved",
+      "kind": "invoke",
+      "label": "Rename item",
+      "source": {
+        "file": "src/routes/saved.tsx"
+      }
+    },
+    {
+      "route": "/saved",
+      "kind": "submit",
+      "source": {
+        "file": "src/routes/saved.tsx"
+      }
+    }
+  ]
 }

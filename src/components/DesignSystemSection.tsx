@@ -2,7 +2,6 @@ import { useEffect, useId, useMemo, useState } from "react";
 import { isAlphaHex } from "../ir/designSystemHex";
 import {
   colorStats,
-  hexUsageCount,
   initialThemeName,
   invalidColorTokens,
   validColorTokens,
@@ -169,7 +168,6 @@ function ThemeColorsPanel({
           {validTokens.map((token, index) => (
             <ColorTokenCard
               key={`${token.name}-${String(index)}`}
-              theme={theme}
               token={token}
             />
           ))}
@@ -203,19 +201,13 @@ function ThemeColorsPanel({
 
 function ColorTokenCard({
   token,
-  theme,
 }: {
   token: {
     name: string;
-    value: string;
-    sourceFile: string;
     hex?: string;
   };
-  theme: ValidTheme;
 }) {
   const resolved = token.hex !== undefined;
-  const duplicateCount =
-    resolved && token.hex !== undefined ? hexUsageCount(theme, token.hex) : 0;
 
   return (
     <li className="color-token">
@@ -242,15 +234,6 @@ function ColorTokenCard({
       ) : (
         <p className="color-token-unresolved">Unresolved</p>
       )}
-      <p className="color-token-value file">{token.value}</p>
-      <p className="color-token-file file">{token.sourceFile}</p>
-      {duplicateCount > 1 ? (
-        <p className="color-token-reuse">
-          {duplicateCount === 1
-            ? "1 token uses this color"
-            : `${String(duplicateCount)} tokens use this color`}
-        </p>
-      ) : null}
     </li>
   );
 }

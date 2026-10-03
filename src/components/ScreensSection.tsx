@@ -1,13 +1,20 @@
+import { actionsForRoute } from "../ir/actionsView";
 import { outgoingByFrom } from "../ir/navigationView";
-import type { NavigationField, ScreenItem } from "../ir/types";
+import type { ActionsField, NavigationField, ScreenItem } from "../ir/types";
 import { JsonTree } from "./JsonTree";
+import { ScreenActions } from "./ScreenActions";
 
 type ScreensSectionProps = {
   items: ScreenItem[];
   navigation: NavigationField;
+  actions: ActionsField;
 };
 
-export function ScreensSection({ items, navigation }: ScreensSectionProps) {
+export function ScreensSection({
+  items,
+  navigation,
+  actions,
+}: ScreensSectionProps) {
   const outgoing = outgoingByFrom(navigation);
   const showPerScreenNav = navigation.status !== "absent";
 
@@ -21,6 +28,10 @@ export function ScreensSection({ items, navigation }: ScreensSectionProps) {
             <li className="screen" key={`screen-${String(index)}`}>
               <p className="route">{item.route}</p>
               <p className="file">{item.file}</p>
+              <ScreenActions
+                actions={actionsForRoute(actions, item.route)}
+                sectionId={`screen-actions-${String(index)}`}
+              />
               {showPerScreenNav ? (
                 <ScreenNavigation
                   destinations={outgoing.get(item.route) ?? []}

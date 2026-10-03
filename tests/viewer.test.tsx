@@ -2,6 +2,9 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "../src/App";
+import actionsMinimal from "./fixtures/actions-minimal.json" with {
+  type: "json",
+};
 import designSystemColors from "./fixtures/design-system-colors.json" with {
   type: "json",
 };
@@ -168,8 +171,6 @@ describe("viewer", () => {
       screen.getByText("4 tokens · 3 distinct colors"),
     ).toBeInTheDocument();
     expect(screen.getByText("#604597")).toBeInTheDocument();
-    expect(screen.getAllByText("2 tokens use this color")).toHaveLength(2);
-
     const overlaySwatch = document.querySelector(
       ".color-swatch-checkerboard .color-swatch-fill",
     ) as HTMLElement | null;
@@ -185,7 +186,6 @@ describe("viewer", () => {
     );
     expect(screen.getByText("#020618")).toBeInTheDocument();
     expect(screen.getByText("Unresolved")).toBeInTheDocument();
-    expect(screen.getByText("var(--accent-strong)")).toBeInTheDocument();
     expect(
       document.querySelector(".color-swatch-unresolved"),
     ).toBeInTheDocument();
@@ -203,6 +203,54 @@ describe("viewer", () => {
     expect(
       screen.queryByRole("heading", { name: "Design system" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("shows actions on screens with summary and fallbacks", async () => {
+    await selectFile(jsonFile("actions.json", actionsMinimal));
+
+    expect(screen.getByText("4 Actions")).toBeInTheDocument();
+    expect(screen.getByText("Actions · 4")).toBeInTheDocument();
+    expect(screen.getByText("Add item")).toBeInTheDocument();
+    expect(screen.getByText("Unlabeled action")).toBeInTheDocument();
+    expect(screen.getByText("Submit form")).toBeInTheDocument();
+    expect(screen.getByText(":")).toBeInTheDocument();
+    expect(screen.getAllByText("Invoke").length).toBeGreaterThanOrEqual(3);
+    expect(screen.getByText("Navigates to")).toBeInTheDocument();
+    expect(
+      screen.queryByText("src/routes/index.tsx", {
+        selector: ".action-row .file",
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not show actions UI when actions is absent", async () => {
+    await selectFile(jsonFile("abbox.json", screens));
+    expect(screen.queryByText(/Actions/)).not.toBeInTheDocument();
+  });
+
+  it("shows zero actions summary for empty actions array", async () => {
+    await selectFile(
+      jsonFile("empty-actions.json", {
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        actions: [],
+      }),
+    );
+    expect(screen.getByText("0 Actions")).toBeInTheDocument();
+    expect(screen.queryByText("Actions ·")).not.toBeInTheDocument();
+  });
+
+  it("shows invalid actions container without action count", async () => {
+    await selectFile(
+      jsonFile("bad-actions.json", {
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        actions: null,
+      }),
+    );
+    expect(
+      screen.getByRole("heading", { name: "Actions (invalid)" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("0 Actions")).not.toBeInTheDocument();
+    expect(screen.queryByText("1 Action")).not.toBeInTheDocument();
   });
 
   it("shows a single-theme label instead of one tab", async () => {
