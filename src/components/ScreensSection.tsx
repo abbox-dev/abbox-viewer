@@ -1,6 +1,7 @@
 import { actionsForRoute } from "../ir/actionsView";
 import { outgoingByFrom } from "../ir/navigationView";
 import type { ActionsField, NavigationField, ScreenItem } from "../ir/types";
+import { CollapsibleSection } from "./CollapsibleSection";
 import { JsonTree } from "./JsonTree";
 import { ScreenActions } from "./ScreenActions";
 
@@ -19,8 +20,12 @@ export function ScreensSection({
   const showPerScreenNav = navigation.status !== "absent";
 
   return (
-    <section className="screens" aria-labelledby="screens-heading">
-      <h3 id="screens-heading">Screens</h3>
+    <CollapsibleSection
+      className="screens"
+      headingId="screens-heading"
+      id="screens"
+      title="Screens"
+    >
       {items.length === 0 ? <p>No screens.</p> : null}
       <ul className="screen-list">
         {items.map((item, index) =>
@@ -47,7 +52,7 @@ export function ScreensSection({
           ),
         )}
       </ul>
-    </section>
+    </CollapsibleSection>
   );
 }
 

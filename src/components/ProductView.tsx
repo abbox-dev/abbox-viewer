@@ -11,6 +11,7 @@ import type {
   LoadedResult,
   NavigationField,
 } from "../ir/types";
+import { CollapsibleSection } from "./CollapsibleSection";
 import { DesignSystemSection } from "./DesignSystemSection";
 import { JsonTree } from "./JsonTree";
 import { ProductMapSection } from "./ProductMapSection";
@@ -46,37 +47,41 @@ export function ProductView({ fileName, result }: ProductViewProps) {
 
   return (
     <section className="product">
-      <p className="eyebrow">
-        {result.schemaVersion === "1" ? "Product IR v1" : "Product"}
-      </p>
-      <h2>{validCount === 1 ? "1 Screen" : `${String(validCount)} Screens`}</h2>
-      {showConnectionSummary(result.navigation) ? (
-        <p className="product-meta">
-          {connections === 1
-            ? "1 Connection"
-            : `${String(connections)} Connections`}
+      <div className="product-summary">
+        <p className="eyebrow">
+          {result.schemaVersion === "1" ? "Product IR v1" : "Product"}
         </p>
-      ) : null}
-      {showActionSummary(result.actions) ? (
-        <p className="product-meta">
-          {actionTotal === 1 ? "1 Action" : `${String(actionTotal)} Actions`}
-        </p>
-      ) : null}
-      {fileName ? <p className="file-name">{fileName}</p> : null}
+        <h2>
+          {validCount === 1 ? "1 Screen" : `${String(validCount)} Screens`}
+        </h2>
+        {showConnectionSummary(result.navigation) ? (
+          <p className="product-meta">
+            {connections === 1
+              ? "1 Connection"
+              : `${String(connections)} Connections`}
+          </p>
+        ) : null}
+        {showActionSummary(result.actions) ? (
+          <p className="product-meta">
+            {actionTotal === 1 ? "1 Action" : `${String(actionTotal)} Actions`}
+          </p>
+        ) : null}
+        {fileName ? <p className="file-name">{fileName}</p> : null}
+      </div>
       {showProductMap(result.navigation) ? (
         <ProductMapSection
           items={result.items}
           navigation={result.navigation}
         />
       ) : null}
-      {showDesignSystem(result.designSystem) ? (
-        <DesignSystemSection designSystem={result.designSystem} />
-      ) : null}
       <ScreensSection
         actions={result.actions}
         items={result.items}
         navigation={result.navigation}
       />
+      {showDesignSystem(result.designSystem) ? (
+        <DesignSystemSection designSystem={result.designSystem} />
+      ) : null}
       <InvalidNavigation navigation={result.navigation} />
       <InvalidActions actions={result.actions} />
       <UnrecognizedData entries={result.unrecognized} />
@@ -87,16 +92,17 @@ export function ProductView({ fileName, result }: ProductViewProps) {
 function InvalidActions({ actions }: { actions: ActionsField }) {
   if (actions.status === "invalid") {
     return (
-      <section
+      <CollapsibleSection
         className="invalid-actions"
-        aria-labelledby="invalid-actions-heading"
+        headingId="invalid-actions-heading"
+        id="actions"
+        title="Actions (invalid)"
       >
-        <h3 id="invalid-actions-heading">Actions (invalid)</h3>
         <p className="status" role="alert">
           {actions.message}
         </p>
         <JsonTree value={actions.raw} />
-      </section>
+      </CollapsibleSection>
     );
   }
 
@@ -110,11 +116,12 @@ function InvalidActions({ actions }: { actions: ActionsField }) {
   }
 
   return (
-    <section
+    <CollapsibleSection
       className="invalid-actions"
-      aria-labelledby="invalid-actions-heading"
+      headingId="invalid-actions-heading"
+      id="actions"
+      title="Actions (invalid)"
     >
-      <h3 id="invalid-actions-heading">Actions (invalid)</h3>
       <ul className="invalid-actions-list">
         {invalidItems.map((item) => (
           <li
@@ -126,23 +133,24 @@ function InvalidActions({ actions }: { actions: ActionsField }) {
           </li>
         ))}
       </ul>
-    </section>
+    </CollapsibleSection>
   );
 }
 
 function InvalidNavigation({ navigation }: { navigation: NavigationField }) {
   if (navigation.status === "invalid") {
     return (
-      <section
+      <CollapsibleSection
         className="invalid-navigation"
-        aria-labelledby="invalid-navigation-heading"
+        headingId="invalid-navigation-heading"
+        id="navigation"
+        title="Navigation (invalid)"
       >
-        <h3 id="invalid-navigation-heading">Navigation (invalid)</h3>
         <p className="status" role="alert">
           {navigation.message}
         </p>
         <JsonTree value={navigation.raw} />
-      </section>
+      </CollapsibleSection>
     );
   }
 
@@ -158,11 +166,12 @@ function InvalidNavigation({ navigation }: { navigation: NavigationField }) {
   }
 
   return (
-    <section
+    <CollapsibleSection
       className="invalid-navigation"
-      aria-labelledby="invalid-navigation-heading"
+      headingId="invalid-navigation-heading"
+      id="navigation"
+      title="Navigation (invalid)"
     >
-      <h3 id="invalid-navigation-heading">Navigation (invalid)</h3>
       <ul className="invalid-navigation-list">
         {invalidItems.map((item) => (
           <li
@@ -174,6 +183,6 @@ function InvalidNavigation({ navigation }: { navigation: NavigationField }) {
           </li>
         ))}
       </ul>
-    </section>
+    </CollapsibleSection>
   );
 }

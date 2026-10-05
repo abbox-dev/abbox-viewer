@@ -81,12 +81,48 @@ export type DesignSystemField =
 
 export type ActionKind = "invoke" | "submit";
 
+export type StateEffect = {
+  kind: "valid";
+  effectKind: "state";
+  target: string;
+  value?: string | number | boolean | null;
+};
+
+export type SearchEffect = {
+  kind: "valid";
+  effectKind: "search";
+};
+
+export type InvalidEffect = {
+  kind: "invalid";
+  index: number;
+  raw: JsonValue;
+};
+
+export type UnsupportedEffect = {
+  kind: "unsupported";
+  index: number;
+  raw: JsonValue;
+};
+
+export type EffectItem =
+  | StateEffect
+  | SearchEffect
+  | InvalidEffect
+  | UnsupportedEffect;
+
+export type EffectsField =
+  | { status: "absent" }
+  | { status: "invalid"; raw: JsonValue }
+  | { status: "present"; items: EffectItem[] };
+
 export type ValidActionItem = {
   kind: "valid";
   route: string;
   actionKind: ActionKind;
   sourceFile: string;
   label?: string;
+  effects: EffectsField;
 };
 
 export type InvalidActionItem = {

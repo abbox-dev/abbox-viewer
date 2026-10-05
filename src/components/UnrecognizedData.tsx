@@ -1,4 +1,5 @@
 import type { UnrecognizedEntry } from "../ir/types";
+import { CollapsibleSection } from "./CollapsibleSection";
 import { JsonTree } from "./JsonTree";
 
 export function UnrecognizedData({
@@ -11,8 +12,12 @@ export function UnrecognizedData({
   }
 
   return (
-    <section className="unrecognized" aria-labelledby="unrecognized-heading">
-      <h2 id="unrecognized-heading">Unrecognized data</h2>
+    <CollapsibleSection
+      className="unrecognized"
+      headingId="unrecognized-heading"
+      id="unrecognized"
+      title="Unrecognized data"
+    >
       <ul className="unrecognized-list">
         {entries.map((entry) => (
           <li key={entry.path}>
@@ -21,6 +26,6 @@ export function UnrecognizedData({
           </li>
         ))}
       </ul>
-    </section>
+    </CollapsibleSection>
   );
 }

@@ -12,6 +12,7 @@ import {
   type ProductMapNode,
 } from "../ir/productMapLayout";
 import type { NavigationField, ScreenItem } from "../ir/types";
+import { CollapsibleSection } from "./CollapsibleSection";
 
 type ProductMapSectionProps = {
   items: ScreenItem[];
@@ -28,14 +29,15 @@ export function ProductMapSection({
   );
 
   return (
-    <section
-      aria-describedby={
+    <CollapsibleSection
+      className="product-map"
+      describedBy={
         layout.connections.length > 0 ? "product-map-connections" : undefined
       }
-      aria-labelledby="product-map-heading"
-      className="product-map"
+      headingId="product-map-heading"
+      id="map"
+      title="Product map"
     >
-      <h3 id="product-map-heading">Product map</h3>
       <p className="lede map-lede">
         Discovered screen-to-screen navigation from Product IR.
       </p>
@@ -50,33 +52,35 @@ export function ProductMapSection({
             </p>
           ) : null}
 
-          {layout.components.map((component) => (
-            <MapComponentBlock
-              component={component}
-              edges={layout.edges.filter(
-                (edge) => edge.componentIndex === component.componentIndex,
-              )}
-              key={`component-${String(component.componentIndex)}`}
-            />
-          ))}
+          <div className="map-flow">
+            {layout.components.map((component) => (
+              <MapComponentBlock
+                component={component}
+                edges={layout.edges.filter(
+                  (edge) => edge.componentIndex === component.componentIndex,
+                )}
+                key={`component-${String(component.componentIndex)}`}
+              />
+            ))}
 
-          {layout.isolated.length > 0 ? (
-            <div className="map-isolated">
-              {layout.connections.length > 0 ? (
-                <p className="map-subheading">No discovered connections</p>
-              ) : null}
-              <ul className="map-isolated-list">
-                {layout.isolated.map((node) => (
-                  <li
-                    className="map-node"
-                    key={`iso-${String(node.screenIndex)}`}
-                  >
-                    <span className="route">{node.route}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
+            {layout.isolated.length > 0 ? (
+              <div className="map-isolated">
+                {layout.connections.length > 0 ? (
+                  <p className="map-subheading">No discovered connections</p>
+                ) : null}
+                <ul className="map-isolated-list">
+                  {layout.isolated.map((node) => (
+                    <li
+                      className="map-node"
+                      key={`iso-${String(node.screenIndex)}`}
+                    >
+                      <span className="route">{node.route}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
 
           {layout.connections.length > 0 ? (
             <div className="visually-hidden" id="product-map-connections">
@@ -94,7 +98,7 @@ export function ProductMapSection({
           ) : null}
         </>
       )}
-    </section>
+    </CollapsibleSection>
   );
 }
 

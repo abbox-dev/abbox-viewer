@@ -31,6 +31,7 @@ describe("actionsView", () => {
         route: "/",
         actionKind: "invoke",
         sourceFile: "a.tsx",
+        effects: { status: "absent" },
       },
       { kind: "invalid", index: 1, raw: {} },
     ]);
@@ -45,18 +46,21 @@ describe("actionsView", () => {
         actionKind: "invoke",
         sourceFile: "a.tsx",
         label: "First",
+        effects: { status: "absent" },
       },
       {
         kind: "valid",
         route: "/other",
         actionKind: "invoke",
         sourceFile: "b.tsx",
+        effects: { status: "absent" },
       },
       {
         kind: "valid",
         route: "/",
         actionKind: "submit",
         sourceFile: "a.tsx",
+        effects: { status: "absent" },
       },
     ]);
     expect(actionsForRoute(field, "/").map((a) => a.label)).toEqual([

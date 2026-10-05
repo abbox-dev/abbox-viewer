@@ -43,6 +43,7 @@ async function selectFile(file: File) {
 describe("viewer", () => {
   afterEach(() => {
     cleanup();
+    window.history.replaceState(null, "", window.location.pathname);
   });
 
   beforeEach(() => {
@@ -458,6 +459,46 @@ describe("viewer", () => {
     expect(
       screen.getByRole("heading", { name: "1 Screen" }),
     ).toBeInTheDocument();
+  });
+
+  it("remembers collapsed sections in the url", async () => {
+    const user = userEvent.setup();
+    window.history.replaceState(null, "", "?closed=design");
+    await selectFile(jsonFile("design.json", designSystemColors));
+
+    expect(
+      screen.getByRole("button", { name: "Design system" }),
+    ).toHaveAttribute("aria-expanded", "false");
+    expect(
+      screen.queryByRole("heading", { name: "Colors" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Screens" })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+
+    await user.click(screen.getByRole("button", { name: "Screens" }));
+    await user.click(screen.getByRole("button", { name: "Product map" }));
+    expect(window.location.search).toBe("?closed=map,screens,design");
+
+    await user.click(screen.getByRole("button", { name: "Design system" }));
+    expect(window.location.search).toBe("?closed=map,screens");
+    expect(screen.getByRole("heading", { name: "Colors" })).toBeInTheDocument();
+
+    cleanup();
+    render(<App />);
+    await selectFile(jsonFile("design.json", designSystemColors));
+    expect(screen.getByRole("button", { name: "Product map" })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+    expect(screen.getByRole("button", { name: "Screens" })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+    expect(
+      screen.getByRole("button", { name: "Design system" }),
+    ).toHaveAttribute("aria-expanded", "true");
   });
 
   it("loads a dropped file through the same path", async () => {
