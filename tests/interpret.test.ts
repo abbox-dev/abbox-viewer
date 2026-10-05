@@ -34,6 +34,7 @@ const SCREENS_REQUIRED =
 const NAVIGATION_ABSENT = { status: "absent" as const };
 const DESIGN_SYSTEM_ABSENT = { status: "absent" as const };
 const ACTIONS_ABSENT = { status: "absent" as const };
+const ENTITIES_ABSENT = { status: "absent" as const };
 
 function run(value: unknown) {
   return interpret(JSON.stringify(value));
@@ -61,6 +62,7 @@ describe("interpret", () => {
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -79,6 +81,7 @@ describe("interpret", () => {
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -97,6 +100,7 @@ describe("interpret", () => {
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -108,6 +112,7 @@ describe("interpret", () => {
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -119,6 +124,7 @@ describe("interpret", () => {
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -132,6 +138,7 @@ describe("interpret", () => {
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -163,6 +170,7 @@ describe("interpret", () => {
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [
         { path: "forms", value: [{ name: "login" }] },
         { path: "experimentalThing", value: { enabled: true } },
@@ -188,6 +196,7 @@ describe("interpret", () => {
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [
         { path: "forms", value: [] },
         { path: "screens[0].title", value: "Home" },
@@ -207,6 +216,7 @@ describe("interpret", () => {
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [{ path: "screens[1].title", value: "Ok" }],
     });
   });
@@ -282,6 +292,7 @@ describe("interpret", () => {
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -293,6 +304,7 @@ describe("interpret", () => {
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
     expect(run({ screens: [{ route: "/only", source: { file: 1 } }] })).toEqual(
@@ -308,6 +320,7 @@ describe("interpret", () => {
         navigation: NAVIGATION_ABSENT,
         designSystem: DESIGN_SYSTEM_ABSENT,
         actions: ACTIONS_ABSENT,
+        entities: ENTITIES_ABSENT,
         unrecognized: [],
       },
     );
@@ -327,6 +340,7 @@ describe("interpret", () => {
         navigation: NAVIGATION_ABSENT,
         designSystem: DESIGN_SYSTEM_ABSENT,
         actions: ACTIONS_ABSENT,
+        entities: ENTITIES_ABSENT,
         unrecognized: [],
       },
     );
@@ -347,6 +361,7 @@ describe("interpret", () => {
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -363,6 +378,7 @@ describe("interpret", () => {
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [{ path: "schemaVersion", value: 1 }],
     });
   });
@@ -380,6 +396,7 @@ describe("interpret", () => {
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -402,6 +419,7 @@ describe("interpret", () => {
       navigation: NAVIGATION_ABSENT,
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -447,6 +465,7 @@ describe("interpret", () => {
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -470,6 +489,7 @@ describe("interpret", () => {
       navigation: { status: "present", items: [] },
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -490,6 +510,7 @@ describe("interpret", () => {
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -515,6 +536,7 @@ describe("interpret", () => {
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -547,6 +569,7 @@ describe("interpret", () => {
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -569,6 +592,7 @@ describe("interpret", () => {
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [{ path: "navigation[0].label", value: "go" }],
     });
   });
@@ -597,6 +621,7 @@ describe("interpret", () => {
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -620,6 +645,7 @@ describe("interpret", () => {
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [{ path: "forms", value: [] }],
     });
   });
@@ -642,6 +668,7 @@ describe("interpret", () => {
       },
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
+      entities: ENTITIES_ABSENT,
       unrecognized: [],
     });
   });
@@ -679,6 +706,7 @@ describe("interpret", () => {
         navigation: NAVIGATION_ABSENT,
         designSystem: { status: "present", themes: [] },
         actions: ACTIONS_ABSENT,
+        entities: ENTITIES_ABSENT,
         unrecognized: [],
       });
     });
@@ -758,6 +786,7 @@ describe("interpret", () => {
           ],
         },
         actions: ACTIONS_ABSENT,
+        entities: ENTITIES_ABSENT,
         unrecognized: [],
       });
     });
@@ -923,6 +952,7 @@ describe("interpret", () => {
           },
         ],
         actions: ACTIONS_ABSENT,
+        entities: ENTITIES_ABSENT,
       });
     });
 
@@ -1036,6 +1066,7 @@ describe("interpret", () => {
         navigation: NAVIGATION_ABSENT,
         designSystem: DESIGN_SYSTEM_ABSENT,
         actions: { status: "present", items: [] },
+        entities: ENTITIES_ABSENT,
         unrecognized: [],
       });
     });
@@ -1076,6 +1107,7 @@ describe("interpret", () => {
             validAction("/", "submit", "a.tsx"),
           ],
         },
+        entities: ENTITIES_ABSENT,
         unrecognized: [],
       });
     });
@@ -1187,6 +1219,7 @@ describe("interpret", () => {
           { path: "actions[0].effect", value: { type: "api" } },
           { path: "actions[0].source.line", value: 1 },
         ],
+        entities: ENTITIES_ABSENT,
       });
     });
 
@@ -1452,6 +1485,308 @@ describe("interpret", () => {
             index: 2,
             raw: { route: "/", kind: "invoke", source: "nope" },
           },
+        ],
+      });
+    });
+  });
+
+  describe("entities", () => {
+    function validEntity(
+      name: string,
+      sourceFile: string,
+      fields: Array<{ kind: "valid"; name: string; optional?: boolean }>,
+    ) {
+      return {
+        kind: "valid" as const,
+        name,
+        sourceFile,
+        fields,
+      };
+    }
+
+    function validField(name: string, optional?: boolean) {
+      return {
+        kind: "valid" as const,
+        name,
+        ...(optional !== undefined ? { optional } : {}),
+      };
+    }
+
+    it("treats missing entities as absent", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+      });
+      expect(result.ok && result.entities).toEqual(ENTITIES_ABSENT);
+    });
+
+    it("loads an empty entities array", () => {
+      expect(
+        run({
+          screens: [{ route: "/", source: { file: "a.tsx" } }],
+          entities: [],
+        }),
+      ).toEqual({
+        ok: true,
+        items: [screen("/", "a.tsx")],
+        navigation: NAVIGATION_ABSENT,
+        designSystem: DESIGN_SYSTEM_ABSENT,
+        actions: ACTIONS_ABSENT,
+        entities: { status: "present", items: [] },
+        unrecognized: [],
+      });
+    });
+
+    it("parses one and multiple valid entities with fields", () => {
+      expect(
+        run({
+          screens: [{ route: "/", source: { file: "a.tsx" } }],
+          entities: [
+            {
+              name: "Investor",
+              source: { file: "src/data/directory.ts" },
+              fields: [{ name: "id" }, { name: "name", optional: true }],
+            },
+            {
+              name: "Program",
+              source: { file: "src/data/directory.ts" },
+              fields: [{ name: "slug" }],
+            },
+          ],
+        }),
+      ).toEqual({
+        ok: true,
+        items: [screen("/", "a.tsx")],
+        navigation: NAVIGATION_ABSENT,
+        designSystem: DESIGN_SYSTEM_ABSENT,
+        actions: ACTIONS_ABSENT,
+        entities: {
+          status: "present",
+          items: [
+            validEntity("Investor", "src/data/directory.ts", [
+              validField("id"),
+              validField("name", true),
+            ]),
+            validEntity("Program", "src/data/directory.ts", [
+              validField("slug"),
+            ]),
+          ],
+        },
+        unrecognized: [],
+      });
+    });
+
+    it("preserves optional false and absent optional on valid fields", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        entities: [
+          {
+            name: "Item",
+            source: { file: "m.ts" },
+            fields: [
+              { name: "a", optional: false },
+              { name: "b" },
+              { name: "c", optional: true },
+            ],
+          },
+        ],
+      });
+      expect(result.ok && result.entities).toEqual({
+        status: "present",
+        items: [
+          validEntity("Item", "m.ts", [
+            validField("a", false),
+            validField("b"),
+            validField("c", true),
+          ]),
+        ],
+      });
+    });
+
+    it("keeps empty entity and field names", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        entities: [
+          {
+            name: "",
+            source: { file: "" },
+            fields: [{ name: "" }],
+          },
+        ],
+      });
+      expect(result.ok && result.entities).toEqual({
+        status: "present",
+        items: [validEntity("", "", [validField("")])],
+      });
+    });
+
+    it("preserves document order", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        entities: [
+          {
+            name: "Z",
+            source: { file: "z.ts" },
+            fields: [{ name: "z" }],
+          },
+          {
+            name: "A",
+            source: { file: "a.ts" },
+            fields: [{ name: "a" }],
+          },
+        ],
+      });
+      expect(result.ok && result.entities).toEqual({
+        status: "present",
+        items: [
+          validEntity("Z", "z.ts", [validField("z")]),
+          validEntity("A", "a.ts", [validField("a")]),
+        ],
+      });
+    });
+
+    it("rejects malformed entities container", () => {
+      expect(
+        run({
+          screens: [{ route: "/", source: { file: "a.tsx" } }],
+          entities: {},
+        }),
+      ).toMatchObject({
+        ok: true,
+        entities: {
+          status: "invalid",
+          message: "entities must be an array.",
+          raw: {},
+        },
+      });
+    });
+
+    it("keeps valid entities when siblings are malformed", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        entities: [
+          {
+            name: "Good",
+            source: { file: "g.ts" },
+            fields: [{ name: "x" }],
+          },
+          { name: "Bad" },
+          "nope",
+        ],
+      });
+      expect(result.ok && result.entities).toEqual({
+        status: "present",
+        items: [
+          validEntity("Good", "g.ts", [validField("x")]),
+          { kind: "invalid", index: 2, raw: { name: "Bad" } },
+          { kind: "invalid", index: 3, raw: "nope" },
+        ],
+      });
+    });
+
+    it("keeps valid fields and marks malformed field entries locally", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        entities: [
+          {
+            name: "Item",
+            source: { file: "m.ts" },
+            fields: [{ name: "ok" }, null, { name: 1 }],
+          },
+        ],
+      });
+      expect(result.ok && result.entities).toEqual({
+        status: "present",
+        items: [
+          {
+            kind: "valid",
+            name: "Item",
+            sourceFile: "m.ts",
+            fields: [
+              validField("ok"),
+              { kind: "invalid", index: 2, raw: null },
+              { kind: "invalid", index: 3, raw: { name: 1 } },
+            ],
+          },
+        ],
+      });
+    });
+
+    it("rejects entity when fields is not an array", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        entities: [
+          {
+            name: "Item",
+            source: { file: "m.ts" },
+            fields: {},
+          },
+        ],
+      });
+      expect(result.ok && result.entities).toEqual({
+        status: "present",
+        items: [
+          {
+            kind: "invalid",
+            index: 1,
+            raw: {
+              name: "Item",
+              source: { file: "m.ts" },
+              fields: {},
+            },
+          },
+        ],
+      });
+    });
+
+    it("records unknown fields on entity, source, and field", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        entities: [
+          {
+            name: "Item",
+            version: 1,
+            source: { file: "m.ts", line: 2 },
+            fields: [{ name: "x", hint: true }],
+          },
+        ],
+      });
+      expect(result.ok && result.unrecognized).toEqual([
+        { path: "entities[0].version", value: 1 },
+        { path: "entities[0].source.line", value: 2 },
+        { path: "entities[0].fields[0].hint", value: true },
+      ]);
+    });
+
+    it("loads schema v1 product without entities as absent", () => {
+      const result = run({
+        schemaVersion: "1",
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+      });
+      expect(result.ok && result.entities).toEqual(ENTITIES_ABSENT);
+    });
+
+    it("preserves a long valid field list in order", () => {
+      const fields = Array.from({ length: 25 }, (_, index) => ({
+        name: `field_${String(index)}`,
+      }));
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        entities: [
+          {
+            name: "Wide",
+            source: { file: "wide.ts" },
+            fields,
+          },
+        ],
+      });
+      expect(result.ok && result.entities).toEqual({
+        status: "present",
+        items: [
+          validEntity(
+            "Wide",
+            "wide.ts",
+            fields.map((field) => validField(field.name)),
+          ),
         ],
       });
     });

@@ -30,7 +30,7 @@ When the `navigation` key is present, a **Product map** section appears above th
 
 `designSystem` is optional. When present, it must be an object with a `themes` array. A valid theme has a string `name` and a `colors` array. A valid color token has string `name`, string `value`, and string `source.file`. The compiler may attach optional canonical `hex` (`#RRGGBB` or `#RRGGBBAA`). The Viewer uses that hex for swatches and does not convert or recalculate colors. Tokens without `hex` are valid but unresolved (for example `var(--token)` in a theme the compiler could not statically resolve).
 
-When `designSystem` is recognized, a **Design system** section appears between the Product map and Screens. The **Colors** subsection shows a responsive palette for one product theme at a time. Use the theme control to switch between themes such as `default` and `dark`. That control inspects product design tokens; it does not change the Viewer application theme. Each color shows a swatch (with a transparency checkerboard when alpha hex is present), semantic name, and hex or **Unresolved**. The summary line reports valid token count and distinct resolved colors (exact hex equality) for the selected theme. Color similarity and design drift across versions are not analyzed yet.
+When `designSystem` is recognized, a **Design system** section appears after Screens. The **Colors** subsection shows a responsive palette for one product theme at a time. Use the theme control to switch between themes such as `default` and `dark`. That control inspects product design tokens; it does not change the Viewer application theme. Each color shows a swatch (with a transparency checkerboard when alpha hex is present), semantic name, and hex or **Unresolved**. The summary line reports valid token count and distinct resolved colors (exact hex equality) for the selected theme. Color similarity and design drift across versions are not analyzed yet.
 
 Malformed `designSystem` data is labeled invalid and stays inspectable. Valid themes and colors beside invalid entries still render. Extra fields on `designSystem`, themes, colors, or `source` are preserved as unrecognized data.
 
@@ -38,9 +38,13 @@ Malformed `designSystem` data is labeled invalid and stays inspectable. Valid th
 
 Malformed `actions` data is labeled invalid and stays inspectable. Valid actions beside invalid entries still render under screens.
 
+`entities` is optional. When present, it must be an array. A valid entity has string `name`, array `fields`, and object `source` with string `source.file`. A valid field has string `name`. Optional boolean `optional` is shown as **Optional** only when `optional` is `true`; when `optional` is absent or `false`, no marker is shown. The Viewer does not infer types for fields. When the `entities` key is present, the product summary shows a count of valid entities (`0 Entities` when the array is empty). When `entities` is absent, no entity count or Entities section is shown. Valid entities appear in an **Entities** section between the Product map and Screens: entity name, valid field count, `source.file`, and a compact field list. Document order is preserved.
+
+Malformed `entities` container data is labeled **Entities (invalid)** and stays inspectable; no entity summary count or normal Entities section is shown. Malformed entity entries appear in **Entities (invalid)**; valid sibling entities still render. Malformed field entries on an otherwise valid entity appear under that entity as **Fields (invalid)** and are not duplicated in the global invalid section. Extra fields on an entity, its `source`, or a field are unrecognized data.
+
 A file is accepted for its JSON and Product IR content. The `.json` extension is only a file-picker hint.
 
-`examples/abbox.json` is a sample snapshot with screens, navigation, a trimmed design system, and sample actions.
+`examples/abbox.json` is a sample snapshot with screens, navigation, entities, a trimmed design system, and sample actions.
 
 ## Development
 

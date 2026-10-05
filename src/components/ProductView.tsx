@@ -1,18 +1,25 @@
 import { showActionSummary, validActionCount } from "../ir/actionsView";
 import { showDesignSystem } from "../ir/designSystemView";
 import {
+  showEntitiesSection,
+  showEntitySummary,
+  validEntityCount,
+} from "../ir/entitiesView";
+import {
   connectionCount,
   showConnectionSummary,
   showProductMap,
 } from "../ir/navigationView";
 import type {
   ActionsField,
+  EntitiesField,
   InvalidProductResult,
   LoadedResult,
   NavigationField,
 } from "../ir/types";
 import { CollapsibleSection } from "./CollapsibleSection";
 import { DesignSystemSection } from "./DesignSystemSection";
+import { EntitiesSection } from "./EntitiesSection";
 import { JsonTree } from "./JsonTree";
 import { ProductMapSection } from "./ProductMapSection";
 import { ScreensSection } from "./ScreensSection";
@@ -44,6 +51,7 @@ export function ProductView({ fileName, result }: ProductViewProps) {
   ).length;
   const connections = connectionCount(result.navigation);
   const actionTotal = validActionCount(result.actions);
+  const entityTotal = validEntityCount(result.entities);
 
   return (
     <section className="product">
@@ -66,6 +74,11 @@ export function ProductView({ fileName, result }: ProductViewProps) {
             {actionTotal === 1 ? "1 Action" : `${String(actionTotal)} Actions`}
           </p>
         ) : null}
+        {showEntitySummary(result.entities) ? (
+          <p className="product-meta">
+            {entityTotal === 1 ? "1 Entity" : `${String(entityTotal)} Entities`}
+          </p>
+        ) : null}
         {fileName ? <p className="file-name">{fileName}</p> : null}
       </div>
       {showProductMap(result.navigation) ? (
@@ -73,6 +86,9 @@ export function ProductView({ fileName, result }: ProductViewProps) {
           items={result.items}
           navigation={result.navigation}
         />
+      ) : null}
+      {showEntitiesSection(result.entities) ? (
+        <EntitiesSection entities={result.entities} />
       ) : null}
       <ScreensSection
         actions={result.actions}
@@ -84,8 +100,57 @@ export function ProductView({ fileName, result }: ProductViewProps) {
       ) : null}
       <InvalidNavigation navigation={result.navigation} />
       <InvalidActions actions={result.actions} />
+      <InvalidEntities entities={result.entities} />
       <UnrecognizedData entries={result.unrecognized} />
     </section>
+  );
+}
+
+function InvalidEntities({ entities }: { entities: EntitiesField }) {
+  if (entities.status === "invalid") {
+    return (
+      <CollapsibleSection
+        className="invalid-entities"
+        headingId="invalid-entities-heading"
+        id="entities"
+        title="Entities (invalid)"
+      >
+        <p className="status" role="alert">
+          {entities.message}
+        </p>
+        <JsonTree value={entities.raw} />
+      </CollapsibleSection>
+    );
+  }
+
+  if (entities.status !== "present") {
+    return null;
+  }
+
+  const invalidItems = entities.items.filter((item) => item.kind === "invalid");
+  if (invalidItems.length === 0) {
+    return null;
+  }
+
+  return (
+    <CollapsibleSection
+      className="invalid-entities"
+      headingId="invalid-entities-heading"
+      id="entities"
+      title="Entities (invalid)"
+    >
+      <ul className="invalid-entities-list">
+        {invalidItems.map((item) => (
+          <li
+            className="invalid-entry"
+            key={`entity-invalid-${String(item.index)}`}
+          >
+            <p>Entity entry {item.index} is invalid.</p>
+            <JsonTree value={item.raw} />
+          </li>
+        ))}
+      </ul>
+    </CollapsibleSection>
   );
 }
 

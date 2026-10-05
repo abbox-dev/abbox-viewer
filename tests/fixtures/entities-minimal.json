@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1",
+  "screens": [{ "route": "/", "source": { "file": "src/routes/index.tsx" } }],
+  "entities": [
+    {
+      "name": "Widget",
+      "source": { "file": "src/models/widget.ts" },
+      "fields": [{ "name": "id" }, { "name": "label", "optional": true }]
+    },
+    {
+      "name": "Bundle",
+      "source": { "file": "src/models/bundle.ts" },
+      "fields": [{ "name": "code" }]
+    }
+  ]
+}
