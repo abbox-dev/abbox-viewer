@@ -8,6 +8,9 @@ import actionsMinimal from "./fixtures/actions-minimal.json" with {
 import designSystemColors from "./fixtures/design-system-colors.json" with {
   type: "json",
 };
+import entitiesMinimal from "./fixtures/entities-minimal.json" with {
+  type: "json",
+};
 import malformedScreens from "./fixtures/malformed-screens.json" with {
   type: "json",
 };
@@ -227,6 +230,76 @@ describe("viewer", () => {
   it("does not show actions UI when actions is absent", async () => {
     await selectFile(jsonFile("abbox.json", screens));
     expect(screen.queryByText(/Actions/)).not.toBeInTheDocument();
+  });
+
+  it("does not show entities UI when entities is absent", async () => {
+    await selectFile(jsonFile("abbox.json", screens));
+    expect(screen.queryByText(/Entities/)).not.toBeInTheDocument();
+  });
+
+  it("shows entities with summary, fields, and optional marker", async () => {
+    await selectFile(jsonFile("entities.json", entitiesMinimal));
+
+    expect(screen.getByText("2 Entities")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Entities · 2" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Widget")).toBeInTheDocument();
+    expect(screen.getByText("Bundle")).toBeInTheDocument();
+    expect(screen.getByText("src/models/widget.ts")).toBeInTheDocument();
+    expect(screen.getByText("Optional")).toBeInTheDocument();
+    expect(screen.queryByText("?")).not.toBeInTheDocument();
+  });
+
+  it("shows zero entities summary and empty state for empty array", async () => {
+    await selectFile(
+      jsonFile("empty-entities.json", {
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        entities: [],
+      }),
+    );
+    expect(screen.getByText("0 Entities")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Entities · 0" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("No entities in Product IR.")).toBeInTheDocument();
+  });
+
+  it("shows invalid entities container without entity count", async () => {
+    await selectFile(
+      jsonFile("bad-entities.json", {
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        entities: null,
+      }),
+    );
+    expect(
+      screen.getByRole("heading", { name: "Entities (invalid)" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("0 Entities")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: /^Entities ·/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows local invalid fields without duplicating in global invalid section", async () => {
+    await selectFile(
+      jsonFile("entity-bad-fields.json", {
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        entities: [
+          {
+            name: "Item",
+            source: { file: "m.ts" },
+            fields: [{ name: "ok" }, null],
+          },
+        ],
+      }),
+    );
+    expect(screen.getByText("Item")).toBeInTheDocument();
+    expect(screen.getByText("ok")).toBeInTheDocument();
+    expect(screen.getByText("Fields (invalid)")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Entities (invalid)" }),
+    ).not.toBeInTheDocument();
   });
 
   it("shows zero actions summary for empty actions array", async () => {

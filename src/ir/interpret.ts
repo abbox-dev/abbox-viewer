@@ -8,6 +8,9 @@ import type {
   DesignSystemField,
   EffectItem,
   EffectsField,
+  EntitiesField,
+  EntityFieldItem,
+  EntityItem,
   InterpretResult,
   InvalidNavigationItem,
   InvalidScreenItem,
@@ -18,6 +21,8 @@ import type {
   UnrecognizedEntry,
   ValidActionItem,
   ValidColorToken,
+  ValidEntity,
+  ValidEntityField,
   ValidNavigationItem,
   ValidScreenItem,
   ValidTheme,
@@ -37,6 +42,7 @@ const DESIGN_SYSTEM_THEMES_REQUIRED = "designSystem.themes is required.";
 const DESIGN_SYSTEM_THEMES_MUST_BE_ARRAY =
   "designSystem.themes must be an array.";
 const ACTIONS_MUST_BE_ARRAY = "actions must be an array.";
+const ENTITIES_MUST_BE_ARRAY = "entities must be an array.";
 
 const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
 
@@ -67,6 +73,8 @@ export function interpret(text: string): InterpretResult {
   let designSystemValue: JsonValue | undefined;
   let hasActions = false;
   let actionsValue: JsonValue | undefined;
+  let hasEntities = false;
+  let entitiesValue: JsonValue | undefined;
   let schemaVersion: "1" | undefined;
 
   for (const [key, value] of entriesOf(root)) {
@@ -96,6 +104,11 @@ export function interpret(text: string): InterpretResult {
     if (key === "actions") {
       hasActions = true;
       actionsValue = value;
+      continue;
+    }
+    if (key === "entities") {
+      hasEntities = true;
+      entitiesValue = value;
       continue;
     }
     unrecognized.push({ path: formatKey(key), value });
@@ -146,6 +159,7 @@ export function interpret(text: string): InterpretResult {
 
   const routes = knownScreenRoutes(items);
   const actions = parseActions(hasActions, actionsValue, routes, unrecognized);
+  const entities = parseEntities(hasEntities, entitiesValue, unrecognized);
 
   return {
     ok: true,
@@ -153,9 +167,135 @@ export function interpret(text: string): InterpretResult {
     navigation,
     designSystem,
     actions,
+    entities,
     ...(schemaVersion !== undefined ? { schemaVersion } : {}),
     unrecognized,
   };
+}
+
+function parseEntities(
+  hasEntities: boolean,
+  entitiesValue: JsonValue | undefined,
+  unrecognized: UnrecognizedEntry[],
+): EntitiesField {
+  if (!hasEntities || entitiesValue === undefined) {
+    return { status: "absent" };
+  }
+
+  if (!Array.isArray(entitiesValue)) {
+    return {
+      status: "invalid",
+      message: ENTITIES_MUST_BE_ARRAY,
+      raw: entitiesValue,
+    };
+  }
+
+  const items: EntityItem[] = [];
+  entitiesValue.forEach((element, index) => {
+    items.push(validateEntityEntry(element, index, unrecognized));
+  });
+
+  return { status: "present", items };
+}
+
+function validateEntityEntry(
+  value: JsonValue,
+  index: number,
+  unrecognized: UnrecognizedEntry[],
+): ValidEntity | { kind: "invalid"; index: number; raw: JsonValue } {
+  if (!isJsonObject(value)) {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  const record = ownRecord(value);
+  const name = record.name;
+  const fieldsValue = record.fields;
+  const source = record.source;
+
+  if (typeof name !== "string" || !Array.isArray(fieldsValue)) {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  if (source === undefined || !isJsonObject(source)) {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  const sourceRecord = ownRecord(source);
+  const file = sourceRecord.file;
+  if (typeof file !== "string") {
+    return { kind: "invalid", index: index + 1, raw: value };
+  }
+
+  const base = `entities[${index}]`;
+  for (const [key, extra] of entriesOf(record)) {
+    if (key === "name" || key === "fields" || key === "source") {
+      continue;
+    }
+    unrecognized.push({ path: joinPath(base, key), value: extra });
+  }
+  for (const [key, extra] of entriesOf(sourceRecord)) {
+    if (key === "file") {
+      continue;
+    }
+    unrecognized.push({
+      path: joinPath(`${base}.source`, key),
+      value: extra,
+    });
+  }
+
+  const fields: EntityFieldItem[] = [];
+  fieldsValue.forEach((element, fieldIndex) => {
+    fields.push(
+      validateEntityFieldEntry(element, index, fieldIndex, unrecognized),
+    );
+  });
+
+  return {
+    kind: "valid",
+    name,
+    sourceFile: file,
+    fields,
+  };
+}
+
+function validateEntityFieldEntry(
+  value: JsonValue,
+  entityIndex: number,
+  fieldIndex: number,
+  unrecognized: UnrecognizedEntry[],
+): ValidEntityField | { kind: "invalid"; index: number; raw: JsonValue } {
+  if (!isJsonObject(value)) {
+    return { kind: "invalid", index: fieldIndex + 1, raw: value };
+  }
+
+  const record = ownRecord(value);
+  const name = record.name;
+  const optionalRaw = record.optional;
+
+  if (typeof name !== "string") {
+    return { kind: "invalid", index: fieldIndex + 1, raw: value };
+  }
+
+  if (optionalRaw !== undefined && typeof optionalRaw !== "boolean") {
+    return { kind: "invalid", index: fieldIndex + 1, raw: value };
+  }
+
+  const base = `entities[${entityIndex}].fields[${fieldIndex}]`;
+  for (const [key, extra] of entriesOf(record)) {
+    if (key === "name" || key === "optional") {
+      continue;
+    }
+    unrecognized.push({ path: joinPath(base, key), value: extra });
+  }
+
+  const field: ValidEntityField = {
+    kind: "valid",
+    name,
+  };
+  if (typeof optionalRaw === "boolean") {
+    field.optional = optionalRaw;
+  }
+  return field;
 }
 
 function parseActions(

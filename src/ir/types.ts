@@ -138,6 +138,40 @@ export type ActionsField =
   | { status: "invalid"; message: string; raw: JsonValue }
   | { status: "present"; items: ActionItem[] };
 
+export type ValidEntityField = {
+  kind: "valid";
+  name: string;
+  optional?: boolean;
+};
+
+export type InvalidEntityField = {
+  kind: "invalid";
+  index: number;
+  raw: JsonValue;
+};
+
+export type EntityFieldItem = ValidEntityField | InvalidEntityField;
+
+export type ValidEntity = {
+  kind: "valid";
+  name: string;
+  sourceFile: string;
+  fields: EntityFieldItem[];
+};
+
+export type InvalidEntity = {
+  kind: "invalid";
+  index: number;
+  raw: JsonValue;
+};
+
+export type EntityItem = ValidEntity | InvalidEntity;
+
+export type EntitiesField =
+  | { status: "absent" }
+  | { status: "invalid"; message: string; raw: JsonValue }
+  | { status: "present"; items: EntityItem[] };
+
 export type UnreadableResult = {
   ok: false;
   kind: "unreadable";
@@ -158,6 +192,7 @@ export type LoadedResult = {
   navigation: NavigationField;
   designSystem: DesignSystemField;
   actions: ActionsField;
+  entities: EntitiesField;
   schemaVersion?: "1";
   unrecognized: UnrecognizedEntry[];
 };

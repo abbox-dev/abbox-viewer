@@ -121,6 +121,13 @@
       }
     ]
   },
+  "entities": [
+    {
+      "name": "Widget",
+      "source": { "file": "src/models/widget.ts" },
+      "fields": [{ "name": "id" }, { "name": "title", "optional": true }]
+    }
+  ],
   "actions": [
     {
       "route": "/",
