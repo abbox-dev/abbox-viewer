@@ -6,6 +6,8 @@ import type {
   ActionsField,
   ColorToken,
   DesignSystemField,
+  EffectItem,
+  EffectsField,
   InterpretResult,
   InvalidNavigationItem,
   InvalidScreenItem,
@@ -230,7 +232,8 @@ function validateActionEntry(
       key === "route" ||
       key === "kind" ||
       key === "label" ||
-      key === "source"
+      key === "source" ||
+      key === "effects"
     ) {
       continue;
     }
@@ -251,11 +254,107 @@ function validateActionEntry(
     route,
     actionKind: kindRaw as ActionKind,
     sourceFile: file,
+    effects: parseEffects(record, index, unrecognized),
   };
   if (typeof labelRaw === "string") {
     action.label = labelRaw;
   }
   return action;
+}
+
+function parseEffects(
+  record: { [key: string]: JsonValue },
+  actionIndex: number,
+  unrecognized: UnrecognizedEntry[],
+): EffectsField {
+  if (!Object.hasOwn(record, "effects")) {
+    return { status: "absent" };
+  }
+
+  const effectsValue = record.effects;
+  if (!Array.isArray(effectsValue)) {
+    return { status: "invalid", raw: effectsValue as JsonValue };
+  }
+
+  const items: EffectItem[] = [];
+  effectsValue.forEach((element, effectIndex) => {
+    items.push(
+      validateEffectEntry(element, actionIndex, effectIndex, unrecognized),
+    );
+  });
+  return { status: "present", items };
+}
+
+function validateEffectEntry(
+  value: JsonValue,
+  actionIndex: number,
+  effectIndex: number,
+  unrecognized: UnrecognizedEntry[],
+): EffectItem {
+  const displayIndex = effectIndex + 1;
+  if (!isJsonObject(value)) {
+    return { kind: "invalid", index: displayIndex, raw: value };
+  }
+
+  const effectRecord = ownRecord(value);
+  const kindRaw = effectRecord.kind;
+  if (typeof kindRaw !== "string") {
+    return { kind: "invalid", index: displayIndex, raw: value };
+  }
+
+  if (kindRaw !== "state" && kindRaw !== "search") {
+    return { kind: "unsupported", index: displayIndex, raw: value };
+  }
+
+  const base = `actions[${String(actionIndex)}].effects[${String(effectIndex)}]`;
+  if (kindRaw === "search") {
+    for (const [key, extra] of entriesOf(effectRecord)) {
+      if (key === "kind") {
+        continue;
+      }
+      unrecognized.push({ path: joinPath(base, key), value: extra });
+    }
+    return { kind: "valid", effectKind: "search" };
+  }
+
+  const target = effectRecord.target;
+  if (typeof target !== "string") {
+    return { kind: "invalid", index: displayIndex, raw: value };
+  }
+
+  const hasValue = Object.hasOwn(effectRecord, "value");
+  const literal = effectRecord.value;
+  if (hasValue && !isStateLiteral(literal)) {
+    return { kind: "invalid", index: displayIndex, raw: value };
+  }
+
+  for (const [key, extra] of entriesOf(effectRecord)) {
+    if (key === "kind" || key === "target" || key === "value") {
+      continue;
+    }
+    unrecognized.push({ path: joinPath(base, key), value: extra });
+  }
+
+  if (hasValue && isStateLiteral(literal)) {
+    return {
+      kind: "valid",
+      effectKind: "state",
+      target,
+      value: literal,
+    };
+  }
+  return { kind: "valid", effectKind: "state", target };
+}
+
+function isStateLiteral(
+  value: JsonValue | undefined,
+): value is string | number | boolean | null {
+  return (
+    value === null ||
+    typeof value === "string" ||
+    typeof value === "boolean" ||
+    typeof value === "number"
+  );
 }
 
 function parseDesignSystem(

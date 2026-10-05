@@ -999,6 +999,8 @@ describe("interpret", () => {
   });
 
   describe("actions", () => {
+    const effectsAbsent = { status: "absent" as const };
+
     function validAction(
       route: string,
       actionKind: "invoke" | "submit",
@@ -1010,6 +1012,7 @@ describe("interpret", () => {
         route,
         actionKind,
         sourceFile,
+        effects: effectsAbsent,
         ...(label !== undefined ? { label } : {}),
       };
     }
@@ -1185,6 +1188,242 @@ describe("interpret", () => {
           { path: "actions[0].source.line", value: 1 },
         ],
       });
+    });
+
+    it("treats a missing effects key as absent", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        actions: [
+          {
+            route: "/",
+            kind: "invoke",
+            label: "Save",
+            source: { file: "a.tsx" },
+          },
+        ],
+      });
+      expect(result.ok && result.actions).toEqual({
+        status: "present",
+        items: [validAction("/", "invoke", "a.tsx", "Save")],
+      });
+    });
+
+    it("loads an empty effects array", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        actions: [
+          {
+            route: "/",
+            kind: "invoke",
+            source: { file: "a.tsx" },
+            effects: [],
+          },
+        ],
+      });
+      expect(result.ok && result.actions).toEqual({
+        status: "present",
+        items: [
+          {
+            ...validAction("/", "invoke", "a.tsx"),
+            effects: { status: "present", items: [] },
+          },
+        ],
+      });
+    });
+
+    it("parses search and state effects in source order", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        actions: [
+          {
+            route: "/",
+            kind: "invoke",
+            label: "Save",
+            source: { file: "a.tsx" },
+            effects: [
+              { kind: "search" },
+              { kind: "state", target: "drawer", value: true },
+              { kind: "state", target: "mode", value: "cards" },
+              { kind: "state", target: "count", value: 2 },
+              { kind: "state", target: "name", value: null },
+              { kind: "state", target: "count" },
+              { kind: "state", target: "" },
+            ],
+          },
+        ],
+      });
+      expect(result.ok && result.actions).toEqual({
+        status: "present",
+        items: [
+          {
+            ...validAction("/", "invoke", "a.tsx", "Save"),
+            effects: {
+              status: "present",
+              items: [
+                { kind: "valid", effectKind: "search" },
+                {
+                  kind: "valid",
+                  effectKind: "state",
+                  target: "drawer",
+                  value: true,
+                },
+                {
+                  kind: "valid",
+                  effectKind: "state",
+                  target: "mode",
+                  value: "cards",
+                },
+                {
+                  kind: "valid",
+                  effectKind: "state",
+                  target: "count",
+                  value: 2,
+                },
+                {
+                  kind: "valid",
+                  effectKind: "state",
+                  target: "name",
+                  value: null,
+                },
+                { kind: "valid", effectKind: "state", target: "count" },
+                { kind: "valid", effectKind: "state", target: "" },
+              ],
+            },
+          },
+        ],
+      });
+    });
+
+    it("keeps the action when the effects container is not an array", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        actions: [
+          {
+            route: "/",
+            kind: "invoke",
+            label: "Save",
+            source: { file: "a.tsx" },
+            effects: null,
+          },
+        ],
+      });
+      expect(result.ok && result.items).toEqual([screen("/", "a.tsx")]);
+      expect(result.ok && result.actions).toEqual({
+        status: "present",
+        items: [
+          {
+            ...validAction("/", "invoke", "a.tsx", "Save"),
+            effects: { status: "invalid", raw: null },
+          },
+        ],
+      });
+    });
+
+    it("marks a malformed known effect invalid and keeps a valid sibling", () => {
+      const missingTarget = { kind: "state" };
+      const badTarget = { kind: "state", target: 123 };
+      const badValue = { kind: "state", target: "drawer", value: {} };
+      const badKindType = { kind: 1 };
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        actions: [
+          {
+            route: "/",
+            kind: "invoke",
+            label: "Save",
+            source: { file: "a.tsx" },
+            effects: [
+              { kind: "search" },
+              missingTarget,
+              badTarget,
+              badValue,
+              badKindType,
+            ],
+          },
+        ],
+      });
+      expect(result.ok && result.items).toEqual([screen("/", "a.tsx")]);
+      expect(result.ok && result.actions).toEqual({
+        status: "present",
+        items: [
+          {
+            ...validAction("/", "invoke", "a.tsx", "Save"),
+            effects: {
+              status: "present",
+              items: [
+                { kind: "valid", effectKind: "search" },
+                { kind: "invalid", index: 2, raw: missingTarget },
+                { kind: "invalid", index: 3, raw: badTarget },
+                { kind: "invalid", index: 4, raw: badValue },
+                { kind: "invalid", index: 5, raw: badKindType },
+              ],
+            },
+          },
+        ],
+      });
+      expect(result.ok && result.unrecognized).toEqual([]);
+    });
+
+    it("keeps an unknown effect kind as unsupported", () => {
+      const request = { kind: "request", method: "POST" };
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        actions: [
+          {
+            route: "/",
+            kind: "invoke",
+            label: "Save",
+            source: { file: "a.tsx" },
+            effects: [{ kind: "search" }, request],
+          },
+        ],
+      });
+      expect(result.ok && result.items).toEqual([screen("/", "a.tsx")]);
+      expect(result.ok && result.actions).toEqual({
+        status: "present",
+        items: [
+          {
+            ...validAction("/", "invoke", "a.tsx", "Save"),
+            effects: {
+              status: "present",
+              items: [
+                { kind: "valid", effectKind: "search" },
+                { kind: "unsupported", index: 2, raw: request },
+              ],
+            },
+          },
+        ],
+      });
+      expect(result.ok && result.unrecognized).toEqual([]);
+    });
+
+    it("records unknown fields on a valid search effect", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        actions: [
+          {
+            route: "/",
+            kind: "invoke",
+            source: { file: "a.tsx" },
+            effects: [{ kind: "search", note: true }],
+          },
+        ],
+      });
+      expect(result.ok && result.actions).toEqual({
+        status: "present",
+        items: [
+          {
+            ...validAction("/", "invoke", "a.tsx"),
+            effects: {
+              status: "present",
+              items: [{ kind: "valid", effectKind: "search" }],
+            },
+          },
+        ],
+      });
+      expect(result.ok && result.unrecognized).toEqual([
+        { path: "actions[0].effects[0].note", value: true },
+      ]);
     });
 
     it("rejects invalid label type and malformed source", () => {

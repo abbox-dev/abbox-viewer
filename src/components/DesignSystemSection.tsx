@@ -8,6 +8,7 @@ import {
   validThemes,
 } from "../ir/designSystemView";
 import type { DesignSystemField, ThemeItem, ValidTheme } from "../ir/types";
+import { CollapsibleSection } from "./CollapsibleSection";
 import { JsonTree } from "./JsonTree";
 
 type DesignSystemSectionProps = {
@@ -34,8 +35,12 @@ export function DesignSystemSection({
   const selectedTheme = themes.find((theme) => theme.name === selectedName);
 
   return (
-    <section aria-labelledby="design-system-heading" className="design-system">
-      <h3 id="design-system-heading">Design system</h3>
+    <CollapsibleSection
+      className="design-system"
+      headingId="design-system-heading"
+      id="design"
+      title="Design system"
+    >
       <p className="lede design-system-lede">
         Declared design tokens from Product IR.
       </p>
@@ -82,7 +87,7 @@ export function DesignSystemSection({
           ) : null}
         </>
       ) : null}
-    </section>
+    </CollapsibleSection>
   );
 }
 

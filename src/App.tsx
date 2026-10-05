@@ -61,20 +61,27 @@ export function App() {
 
   return (
     <main>
-      <header>
-        <h1>Abbox Viewer</h1>
-        <p className="lede">
-          Visualize one abbox.json snapshot. The file stays in this browser.
-        </p>
-      </header>
-      <FilePicker onFiles={handleFiles} />
-      {state.status !== "idle" ? (
-        <div className="toolbar">
-          <button onClick={() => setState({ status: "idle" })} type="button">
-            Reset
-          </button>
+      <div className="topbar">
+        <header>
+          <h1>Abbox Viewer</h1>
+          <p className="lede">
+            Visualize one abbox.json snapshot. The file stays in this browser.
+          </p>
+        </header>
+        <div className="topbar-controls">
+          <FilePicker onFiles={handleFiles} />
+          {state.status !== "idle" ? (
+            <div className="toolbar">
+              <button
+                onClick={() => setState({ status: "idle" })}
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
+          ) : null}
         </div>
-      ) : null}
+      </div>
       {state.status === "unreadable" ? (
         <section className="product">
           {state.fileName ? (
