@@ -1,4 +1,5 @@
 import { type CSSProperties, useMemo } from "react";
+import { mainNavigationRouteSet } from "../ir/globalNavigationView";
 import {
   buildProductMapLayout,
   MAP_ARC_OFFSET,
@@ -11,18 +12,28 @@ import {
   type ProductMapEdge,
   type ProductMapNode,
 } from "../ir/productMapLayout";
-import type { NavigationField, ScreenItem } from "../ir/types";
+import type {
+  GlobalNavigationField,
+  NavigationField,
+  ScreenItem,
+} from "../ir/types";
 import { CollapsibleSection } from "./CollapsibleSection";
 
 type ProductMapSectionProps = {
+  globalNavigation: GlobalNavigationField;
   items: ScreenItem[];
   navigation: NavigationField;
 };
 
 export function ProductMapSection({
+  globalNavigation,
   items,
   navigation,
 }: ProductMapSectionProps) {
+  const mainNavRoutes = useMemo(
+    () => mainNavigationRouteSet(globalNavigation),
+    [globalNavigation],
+  );
   const layout = useMemo(
     () => buildProductMapLayout(items, navigation),
     [items, navigation],
@@ -39,11 +50,17 @@ export function ProductMapSection({
       title="Product map"
     >
       <p className="lede map-lede">
-        Discovered screen-to-screen navigation from Product IR.
+        Connections show navigation attributable to a particular screen. Main
+        nav markers identify destinations available through persistent
+        navigation.
       </p>
 
       {layout.fallback ? (
-        <ProductMapFallback layout={layout} items={items} />
+        <ProductMapFallback
+          layout={layout}
+          items={items}
+          mainNavRoutes={mainNavRoutes}
+        />
       ) : (
         <>
           {layout.connections.length === 0 ? (
@@ -60,6 +77,7 @@ export function ProductMapSection({
                   (edge) => edge.componentIndex === component.componentIndex,
                 )}
                 key={`component-${String(component.componentIndex)}`}
+                mainNavRoutes={mainNavRoutes}
               />
             ))}
 
@@ -74,7 +92,10 @@ export function ProductMapSection({
                       className="map-node"
                       key={`iso-${String(node.screenIndex)}`}
                     >
-                      <span className="route">{node.route}</span>
+                      <MapScreenNode
+                        isMainNav={mainNavRoutes.has(node.route)}
+                        route={node.route}
+                      />
                     </li>
                   ))}
                 </ul>
@@ -105,11 +126,14 @@ export function ProductMapSection({
 function ProductMapFallback({
   layout,
   items,
+  mainNavRoutes,
 }: {
   layout: ReturnType<typeof buildProductMapLayout>;
   items: ScreenItem[];
+  mainNavRoutes: Set<string>;
 }) {
   const validCount = items.filter((item) => item.kind === "valid").length;
+  const mainNavList = [...mainNavRoutes];
   return (
     <div className="map-fallback">
       <p>
@@ -117,6 +141,17 @@ function ProductMapFallback({
         {String(layout.connections.length)} discovered connections. The full map
         is omitted for large products; use the Screens list below for details.
       </p>
+      {mainNavList.length > 0 ? (
+        <p className="map-fallback-main-nav">
+          Main navigation:{" "}
+          {mainNavList.map((route, index) => (
+            <span key={route}>
+              {index > 0 ? ", " : null}
+              <span className="route">{route}</span>
+            </span>
+          ))}
+        </p>
+      ) : null}
       {layout.connections.length > 0 ? (
         <ul className="map-connections-list">
           {layout.connections.map((edge, index) => (
@@ -134,12 +169,31 @@ function ProductMapFallback({
   );
 }
 
+function MapScreenNode({
+  isMainNav,
+  route,
+}: {
+  isMainNav: boolean;
+  route: string;
+}) {
+  return (
+    <>
+      <span className="route" title={route}>
+        {route}
+      </span>
+      {isMainNav ? <span className="map-main-nav-marker">Main nav</span> : null}
+    </>
+  );
+}
+
 function MapComponentBlock({
   component,
   edges,
+  mainNavRoutes,
 }: {
   component: ProductMapComponent;
   edges: ProductMapEdge[];
+  mainNavRoutes: Set<string>;
 }) {
   const nodeByIndex = new Map<number, ProductMapNode>();
   for (const node of component.nodes) {
@@ -176,9 +230,10 @@ function MapComponentBlock({
               key={`node-${String(node.screenIndex)}`}
               style={{ width: MAP_NODE_WIDTH, minHeight: MAP_NODE_HEIGHT }}
             >
-              <span className="route" title={node.route}>
-                {node.route}
-              </span>
+              <MapScreenNode
+                isMainNav={mainNavRoutes.has(node.route)}
+                route={node.route}
+              />
             </li>
           ))}
         </ul>

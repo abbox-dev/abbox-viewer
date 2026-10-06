@@ -38,6 +38,20 @@
       }
     }
   ],
+  "globalNavigation": [
+    {
+      "to": "/",
+      "source": { "file": "src/components/AppShell.tsx" }
+    },
+    {
+      "to": "/programs",
+      "source": { "file": "src/components/AppShell.tsx" }
+    },
+    {
+      "to": "/saved",
+      "source": { "file": "src/components/AppShell.tsx" }
+    }
+  ],
   "navigation": [
     {
       "from": "/",

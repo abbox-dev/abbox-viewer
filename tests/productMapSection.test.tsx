@@ -20,7 +20,11 @@ describe("ProductMapSection", () => {
     }
 
     const { container } = render(
-      <ProductMapSection items={result.items} navigation={result.navigation} />,
+      <ProductMapSection
+        globalNavigation={result.globalNavigation}
+        items={result.items}
+        navigation={result.navigation}
+      />,
     );
 
     const edgePaths = container.querySelectorAll(".map-edges path[marker-end]");
@@ -29,5 +33,37 @@ describe("ProductMapSection", () => {
     const hidden = container.querySelector("#product-map-connections");
     expect(hidden).toHaveClass("visually-hidden");
     expect(screen.getByText("Connections (discovered)")).toBeInTheDocument();
+  });
+
+  it("marks main navigation destinations without adding edges", () => {
+    const result = interpret(
+      JSON.stringify({
+        screens: [
+          { route: "/", source: { file: "a.tsx" } },
+          { route: "/programs", source: { file: "p.tsx" } },
+          { route: "/detail", source: { file: "d.tsx" } },
+        ],
+        globalNavigation: [
+          { to: "/", source: { file: "shell.tsx" } },
+          { to: "/programs", source: { file: "shell.tsx" } },
+        ],
+      }),
+    );
+    if (!result.ok) {
+      throw new Error("Expected loaded product.");
+    }
+
+    const { container } = render(
+      <ProductMapSection
+        globalNavigation={result.globalNavigation}
+        items={result.items}
+        navigation={result.navigation}
+      />,
+    );
+
+    expect(
+      container.querySelectorAll(".map-edges path[marker-end]").length,
+    ).toBe(0);
+    expect(screen.getAllByText("Main nav").length).toBe(2);
   });
 });

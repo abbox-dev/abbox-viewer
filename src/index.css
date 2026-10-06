@@ -487,6 +487,65 @@ button {
   margin-top: 0;
 }
 
+.main-navigation-list {
+  display: grid;
+  gap: 0.45rem;
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+}
+
+.main-navigation-entry {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.main-navigation-entry .route {
+  font-size: 0.98rem;
+}
+
+.main-navigation-entry .file {
+  margin-top: 0;
+}
+
+.main-navigation-source {
+  margin-top: 0.55rem;
+}
+
+.main-navigation-empty {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 0.75rem 0 0;
+}
+
+.main-navigation-lede {
+  margin-top: 0;
+}
+
+.invalid-main-navigation {
+  margin-top: 0;
+}
+
+.invalid-main-navigation-list {
+  display: grid;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+}
+
+.map-main-nav-marker {
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+.map-fallback-main-nav {
+  font-size: 0.92rem;
+  margin: 0.65rem 0 0;
+}
+
 .invalid-navigation-list {
   list-style: none;
   margin: 0.75rem 0 0;
@@ -565,8 +624,10 @@ button {
   border-radius: 10px;
   padding: 0.55rem 0.65rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.2rem;
   text-align: center;
   flex-shrink: 0;
 }
