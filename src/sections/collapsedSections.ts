@@ -1,5 +1,6 @@
 export const SECTION_IDS = [
   "map",
+  "explore",
   "mainNav",
   "entities",
   "screens",

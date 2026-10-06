@@ -518,6 +518,110 @@ button {
   margin: 0.75rem 0 0;
 }
 
+.explore-lede {
+  margin-top: 0;
+}
+
+.explore-start {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.explore-start-label {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.explore-start-select {
+  font: inherit;
+  min-width: min(100%, 18rem);
+  padding: 0.35rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.explore-subheading {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin: 1rem 0 0.5rem;
+}
+
+.explore-trail-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+}
+
+.explore-trail-step {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+}
+
+.explore-trail-arrow {
+  color: var(--muted);
+}
+
+.explore-trail-kind {
+  font-size: 0.82rem;
+  color: var(--muted);
+  letter-spacing: 0.01em;
+}
+
+.explore-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.explore-control-button,
+.explore-transition-button {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 0.4rem 0.65rem;
+}
+
+.explore-control-button:disabled,
+.explore-transition-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.explore-transition-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.explore-transition-button {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  width: 100%;
+  text-align: start;
+}
+
+.explore-empty,
+.explore-limit {
+  margin: 0.35rem 0 0;
+}
+
 .main-navigation-lede {
   margin-top: 0;
 }

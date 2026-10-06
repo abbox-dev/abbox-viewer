@@ -5,6 +5,7 @@ import {
   showEntitySummary,
   validEntityCount,
 } from "../ir/entitiesView";
+import { showExploreSection } from "../ir/exploreView";
 import {
   mainNavigationSummaryLabel,
   showMainNavigationSection,
@@ -24,6 +25,7 @@ import type {
 import { CollapsibleSection } from "./CollapsibleSection";
 import { DesignSystemSection } from "./DesignSystemSection";
 import { EntitiesSection } from "./EntitiesSection";
+import { ExploreSection } from "./ExploreSection";
 import { GlobalNavigationSection } from "./GlobalNavigationSection";
 import { JsonTree } from "./JsonTree";
 import { ProductMapSection } from "./ProductMapSection";
@@ -94,6 +96,14 @@ export function ProductView({ fileName, result }: ProductViewProps) {
       </div>
       {showProductMapSection(result.navigation, result.globalNavigation) ? (
         <ProductMapSection
+          globalNavigation={result.globalNavigation}
+          items={result.items}
+          navigation={result.navigation}
+        />
+      ) : null}
+      {showExploreSection(result.items) ? (
+        <ExploreSection
+          actions={result.actions}
           globalNavigation={result.globalNavigation}
           items={result.items}
           navigation={result.navigation}
