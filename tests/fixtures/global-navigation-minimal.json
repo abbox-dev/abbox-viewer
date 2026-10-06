@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1",
+  "screens": [
+    { "route": "/", "source": { "file": "src/routes/index.tsx" } },
+    { "route": "/programs", "source": { "file": "src/routes/programs.tsx" } },
+    { "route": "/detail", "source": { "file": "src/routes/detail.tsx" } }
+  ],
+  "globalNavigation": [
+    { "to": "/", "source": { "file": "src/AppShell.tsx" } },
+    { "to": "/programs", "source": { "file": "src/AppShell.tsx" } }
+  ]
+}

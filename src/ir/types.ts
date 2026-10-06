@@ -172,6 +172,27 @@ export type EntitiesField =
   | { status: "invalid"; message: string; raw: JsonValue }
   | { status: "present"; items: EntityItem[] };
 
+export type ValidGlobalNavigationItem = {
+  kind: "valid";
+  to: string;
+  sourceFile: string;
+};
+
+export type InvalidGlobalNavigationItem = {
+  kind: "invalid";
+  index: number;
+  raw: JsonValue;
+};
+
+export type GlobalNavigationItem =
+  | ValidGlobalNavigationItem
+  | InvalidGlobalNavigationItem;
+
+export type GlobalNavigationField =
+  | { status: "absent" }
+  | { status: "invalid"; message: string; raw: JsonValue }
+  | { status: "present"; items: GlobalNavigationItem[] };
+
 export type UnreadableResult = {
   ok: false;
   kind: "unreadable";
@@ -193,6 +214,7 @@ export type LoadedResult = {
   designSystem: DesignSystemField;
   actions: ActionsField;
   entities: EntitiesField;
+  globalNavigation: GlobalNavigationField;
   schemaVersion?: "1";
   unrecognized: UnrecognizedEntry[];
 };

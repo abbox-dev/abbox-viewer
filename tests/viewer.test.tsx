@@ -11,6 +11,9 @@ import designSystemColors from "./fixtures/design-system-colors.json" with {
 import entitiesMinimal from "./fixtures/entities-minimal.json" with {
   type: "json",
 };
+import globalNavigationMinimal from "./fixtures/global-navigation-minimal.json" with {
+  type: "json",
+};
 import malformedScreens from "./fixtures/malformed-screens.json" with {
   type: "json",
 };
@@ -235,6 +238,72 @@ describe("viewer", () => {
   it("does not show entities UI when entities is absent", async () => {
     await selectFile(jsonFile("abbox.json", screens));
     expect(screen.queryByText(/Entities/)).not.toBeInTheDocument();
+  });
+
+  it("does not show main navigation UI when globalNavigation is absent", async () => {
+    await selectFile(jsonFile("abbox.json", screens));
+    expect(screen.queryByText(/main navigation/i)).not.toBeInTheDocument();
+  });
+
+  it("shows main navigation with summary, section, and shared source", async () => {
+    await selectFile(jsonFile("global-nav.json", globalNavigationMinimal));
+
+    expect(
+      screen.getByText("2 main navigation destinations"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Main navigation · 2" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("src/AppShell.tsx")).toBeInTheDocument();
+    expect(screen.getAllByText("/programs").length).toBeGreaterThanOrEqual(1);
+    expect(screen.queryByText("Home")).not.toBeInTheDocument();
+  });
+
+  it("shows product map when only globalNavigation is present", async () => {
+    await selectFile(jsonFile("global-nav.json", globalNavigationMinimal));
+    expect(
+      screen.getByRole("heading", { name: "Product map" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("3 Connections")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Main nav").length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("shows zero main navigation summary and empty section for empty array", async () => {
+    await selectFile(
+      jsonFile("empty-global-nav.json", {
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        globalNavigation: [],
+      }),
+    );
+    expect(
+      screen.getByText("0 main navigation destinations"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("No main navigation destinations in Product IR."),
+    ).toBeInTheDocument();
+  });
+
+  it("shows invalid globalNavigation container without main navigation count", async () => {
+    await selectFile(
+      jsonFile("bad-global-nav.json", {
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        globalNavigation: null,
+      }),
+    );
+    expect(
+      screen.getByRole("heading", { name: "Main navigation (invalid)" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("0 main navigation destinations"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not add main navigation badge text on screen cards", async () => {
+    await selectFile(jsonFile("global-nav.json", globalNavigationMinimal));
+    const screenCards = document.querySelectorAll(".screen-list .screen");
+    for (const card of screenCards) {
+      expect(card.textContent).not.toMatch(/Main nav/);
+    }
   });
 
   it("shows entities with summary, fields, and optional marker", async () => {

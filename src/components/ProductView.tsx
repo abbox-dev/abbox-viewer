@@ -6,13 +6,17 @@ import {
   validEntityCount,
 } from "../ir/entitiesView";
 import {
-  connectionCount,
-  showConnectionSummary,
-  showProductMap,
-} from "../ir/navigationView";
+  mainNavigationSummaryLabel,
+  showMainNavigationSection,
+  showMainNavigationSummary,
+  showProductMapSection,
+  validMainNavigationCount,
+} from "../ir/globalNavigationView";
+import { connectionCount, showConnectionSummary } from "../ir/navigationView";
 import type {
   ActionsField,
   EntitiesField,
+  GlobalNavigationField,
   InvalidProductResult,
   LoadedResult,
   NavigationField,
@@ -20,6 +24,7 @@ import type {
 import { CollapsibleSection } from "./CollapsibleSection";
 import { DesignSystemSection } from "./DesignSystemSection";
 import { EntitiesSection } from "./EntitiesSection";
+import { GlobalNavigationSection } from "./GlobalNavigationSection";
 import { JsonTree } from "./JsonTree";
 import { ProductMapSection } from "./ProductMapSection";
 import { ScreensSection } from "./ScreensSection";
@@ -52,6 +57,7 @@ export function ProductView({ fileName, result }: ProductViewProps) {
   const connections = connectionCount(result.navigation);
   const actionTotal = validActionCount(result.actions);
   const entityTotal = validEntityCount(result.entities);
+  const mainNavTotal = validMainNavigationCount(result.globalNavigation);
 
   return (
     <section className="product">
@@ -79,13 +85,22 @@ export function ProductView({ fileName, result }: ProductViewProps) {
             {entityTotal === 1 ? "1 Entity" : `${String(entityTotal)} Entities`}
           </p>
         ) : null}
+        {showMainNavigationSummary(result.globalNavigation) ? (
+          <p className="product-meta">
+            {mainNavigationSummaryLabel(mainNavTotal)}
+          </p>
+        ) : null}
         {fileName ? <p className="file-name">{fileName}</p> : null}
       </div>
-      {showProductMap(result.navigation) ? (
+      {showProductMapSection(result.navigation, result.globalNavigation) ? (
         <ProductMapSection
+          globalNavigation={result.globalNavigation}
           items={result.items}
           navigation={result.navigation}
         />
+      ) : null}
+      {showMainNavigationSection(result.globalNavigation) ? (
+        <GlobalNavigationSection globalNavigation={result.globalNavigation} />
       ) : null}
       {showEntitiesSection(result.entities) ? (
         <EntitiesSection entities={result.entities} />
@@ -99,6 +114,7 @@ export function ProductView({ fileName, result }: ProductViewProps) {
         <DesignSystemSection designSystem={result.designSystem} />
       ) : null}
       <InvalidNavigation navigation={result.navigation} />
+      <InvalidGlobalNavigation globalNavigation={result.globalNavigation} />
       <InvalidActions actions={result.actions} />
       <InvalidEntities entities={result.entities} />
       <UnrecognizedData entries={result.unrecognized} />
@@ -194,6 +210,60 @@ function InvalidActions({ actions }: { actions: ActionsField }) {
             key={`action-invalid-${String(item.index)}`}
           >
             <p>Action entry {item.index} is invalid.</p>
+            <JsonTree value={item.raw} />
+          </li>
+        ))}
+      </ul>
+    </CollapsibleSection>
+  );
+}
+
+function InvalidGlobalNavigation({
+  globalNavigation,
+}: {
+  globalNavigation: GlobalNavigationField;
+}) {
+  if (globalNavigation.status === "invalid") {
+    return (
+      <CollapsibleSection
+        className="invalid-main-navigation"
+        headingId="invalid-main-navigation-heading"
+        id="mainNav"
+        title="Main navigation (invalid)"
+      >
+        <p className="status" role="alert">
+          {globalNavigation.message}
+        </p>
+        <JsonTree value={globalNavigation.raw} />
+      </CollapsibleSection>
+    );
+  }
+
+  if (globalNavigation.status !== "present") {
+    return null;
+  }
+
+  const invalidItems = globalNavigation.items.filter(
+    (item) => item.kind === "invalid",
+  );
+  if (invalidItems.length === 0) {
+    return null;
+  }
+
+  return (
+    <CollapsibleSection
+      className="invalid-main-navigation"
+      headingId="invalid-main-navigation-heading"
+      id="mainNav"
+      title="Main navigation (invalid)"
+    >
+      <ul className="invalid-main-navigation-list">
+        {invalidItems.map((item) => (
+          <li
+            className="invalid-entry"
+            key={`main-nav-invalid-${String(item.index)}`}
+          >
+            <p>Main navigation entry {item.index} is invalid.</p>
             <JsonTree value={item.raw} />
           </li>
         ))}

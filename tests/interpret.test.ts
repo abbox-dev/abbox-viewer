@@ -35,6 +35,7 @@ const NAVIGATION_ABSENT = { status: "absent" as const };
 const DESIGN_SYSTEM_ABSENT = { status: "absent" as const };
 const ACTIONS_ABSENT = { status: "absent" as const };
 const ENTITIES_ABSENT = { status: "absent" as const };
+const GLOBAL_NAV_ABSENT = { status: "absent" as const };
 
 function run(value: unknown) {
   return interpret(JSON.stringify(value));
@@ -63,6 +64,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -82,6 +84,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -101,6 +104,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -113,6 +117,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -125,6 +130,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -139,6 +145,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -171,6 +178,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [
         { path: "forms", value: [{ name: "login" }] },
         { path: "experimentalThing", value: { enabled: true } },
@@ -197,6 +205,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [
         { path: "forms", value: [] },
         { path: "screens[0].title", value: "Home" },
@@ -217,6 +226,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [{ path: "screens[1].title", value: "Ok" }],
     });
   });
@@ -293,6 +303,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -305,6 +316,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
     expect(run({ screens: [{ route: "/only", source: { file: 1 } }] })).toEqual(
@@ -321,6 +333,7 @@ describe("interpret", () => {
         designSystem: DESIGN_SYSTEM_ABSENT,
         actions: ACTIONS_ABSENT,
         entities: ENTITIES_ABSENT,
+        globalNavigation: GLOBAL_NAV_ABSENT,
         unrecognized: [],
       },
     );
@@ -341,6 +354,7 @@ describe("interpret", () => {
         designSystem: DESIGN_SYSTEM_ABSENT,
         actions: ACTIONS_ABSENT,
         entities: ENTITIES_ABSENT,
+        globalNavigation: GLOBAL_NAV_ABSENT,
         unrecognized: [],
       },
     );
@@ -362,6 +376,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -379,6 +394,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [{ path: "schemaVersion", value: 1 }],
     });
   });
@@ -397,6 +413,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -420,6 +437,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -466,6 +484,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -490,6 +509,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -511,6 +531,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -537,6 +558,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -570,6 +592,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -593,6 +616,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [{ path: "navigation[0].label", value: "go" }],
     });
   });
@@ -622,6 +646,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -646,6 +671,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [{ path: "forms", value: [] }],
     });
   });
@@ -669,6 +695,7 @@ describe("interpret", () => {
       designSystem: DESIGN_SYSTEM_ABSENT,
       actions: ACTIONS_ABSENT,
       entities: ENTITIES_ABSENT,
+      globalNavigation: GLOBAL_NAV_ABSENT,
       unrecognized: [],
     });
   });
@@ -707,6 +734,7 @@ describe("interpret", () => {
         designSystem: { status: "present", themes: [] },
         actions: ACTIONS_ABSENT,
         entities: ENTITIES_ABSENT,
+        globalNavigation: GLOBAL_NAV_ABSENT,
         unrecognized: [],
       });
     });
@@ -787,6 +815,7 @@ describe("interpret", () => {
         },
         actions: ACTIONS_ABSENT,
         entities: ENTITIES_ABSENT,
+        globalNavigation: GLOBAL_NAV_ABSENT,
         unrecognized: [],
       });
     });
@@ -953,6 +982,7 @@ describe("interpret", () => {
         ],
         actions: ACTIONS_ABSENT,
         entities: ENTITIES_ABSENT,
+        globalNavigation: GLOBAL_NAV_ABSENT,
       });
     });
 
@@ -1067,6 +1097,7 @@ describe("interpret", () => {
         designSystem: DESIGN_SYSTEM_ABSENT,
         actions: { status: "present", items: [] },
         entities: ENTITIES_ABSENT,
+        globalNavigation: GLOBAL_NAV_ABSENT,
         unrecognized: [],
       });
     });
@@ -1108,6 +1139,7 @@ describe("interpret", () => {
           ],
         },
         entities: ENTITIES_ABSENT,
+        globalNavigation: GLOBAL_NAV_ABSENT,
         unrecognized: [],
       });
     });
@@ -1220,6 +1252,7 @@ describe("interpret", () => {
           { path: "actions[0].source.line", value: 1 },
         ],
         entities: ENTITIES_ABSENT,
+        globalNavigation: GLOBAL_NAV_ABSENT,
       });
     });
 
@@ -1532,6 +1565,7 @@ describe("interpret", () => {
         designSystem: DESIGN_SYSTEM_ABSENT,
         actions: ACTIONS_ABSENT,
         entities: { status: "present", items: [] },
+        globalNavigation: GLOBAL_NAV_ABSENT,
         unrecognized: [],
       });
     });
@@ -1571,6 +1605,7 @@ describe("interpret", () => {
             ]),
           ],
         },
+        globalNavigation: GLOBAL_NAV_ABSENT,
         unrecognized: [],
       });
     });
@@ -1788,6 +1823,176 @@ describe("interpret", () => {
             fields.map((field) => validField(field.name)),
           ),
         ],
+      });
+    });
+  });
+
+  describe("globalNavigation", () => {
+    function validGlobalNav(to: string, sourceFile: string) {
+      return {
+        kind: "valid" as const,
+        to,
+        sourceFile,
+      };
+    }
+
+    it("treats missing globalNavigation as absent", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+      });
+      expect(result.ok && result.globalNavigation).toEqual(GLOBAL_NAV_ABSENT);
+    });
+
+    it("loads an empty globalNavigation array", () => {
+      expect(
+        run({
+          screens: [{ route: "/", source: { file: "a.tsx" } }],
+          globalNavigation: [],
+        }),
+      ).toEqual({
+        ok: true,
+        items: [screen("/", "a.tsx")],
+        navigation: NAVIGATION_ABSENT,
+        designSystem: DESIGN_SYSTEM_ABSENT,
+        actions: ACTIONS_ABSENT,
+        entities: ENTITIES_ABSENT,
+        globalNavigation: { status: "present", items: [] },
+        unrecognized: [],
+      });
+    });
+
+    it("parses valid global navigation entries", () => {
+      expect(
+        run({
+          screens: [
+            { route: "/", source: { file: "a.tsx" } },
+            { route: "/programs", source: { file: "p.tsx" } },
+            { route: "/saved", source: { file: "s.tsx" } },
+          ],
+          globalNavigation: [
+            { to: "/", source: { file: "src/AppShell.tsx" } },
+            { to: "/programs", source: { file: "src/AppShell.tsx" } },
+            { to: "/saved", source: { file: "src/AppShell.tsx" } },
+          ],
+        }),
+      ).toEqual({
+        ok: true,
+        items: [
+          screen("/", "a.tsx"),
+          screen("/programs", "p.tsx"),
+          screen("/saved", "s.tsx"),
+        ],
+        navigation: NAVIGATION_ABSENT,
+        designSystem: DESIGN_SYSTEM_ABSENT,
+        actions: ACTIONS_ABSENT,
+        entities: ENTITIES_ABSENT,
+        globalNavigation: {
+          status: "present",
+          items: [
+            validGlobalNav("/", "src/AppShell.tsx"),
+            validGlobalNav("/programs", "src/AppShell.tsx"),
+            validGlobalNav("/saved", "src/AppShell.tsx"),
+          ],
+        },
+        unrecognized: [],
+      });
+    });
+
+    it("rejects unknown to route and malformed entries", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        globalNavigation: [
+          { to: "/missing", source: { file: "x.tsx" } },
+          { to: "/" },
+          { source: { file: "x.tsx" } },
+        ],
+      });
+      expect(result.ok && result.globalNavigation).toEqual({
+        status: "present",
+        items: [
+          {
+            kind: "invalid",
+            index: 1,
+            raw: { to: "/missing", source: { file: "x.tsx" } },
+          },
+          { kind: "invalid", index: 2, raw: { to: "/" } },
+          { kind: "invalid", index: 3, raw: { source: { file: "x.tsx" } } },
+        ],
+      });
+    });
+
+    it("rejects malformed globalNavigation container", () => {
+      expect(
+        run({
+          screens: [{ route: "/", source: { file: "a.tsx" } }],
+          globalNavigation: {},
+        }),
+      ).toMatchObject({
+        ok: true,
+        globalNavigation: {
+          status: "invalid",
+          message: "globalNavigation must be an array.",
+          raw: {},
+        },
+      });
+    });
+
+    it("preserves document order and duplicate destinations", () => {
+      const result = run({
+        screens: [
+          { route: "/", source: { file: "a.tsx" } },
+          { route: "/b", source: { file: "b.tsx" } },
+        ],
+        globalNavigation: [
+          { to: "/b", source: { file: "s.tsx" } },
+          { to: "/", source: { file: "s.tsx" } },
+          { to: "/b", source: { file: "s.tsx" } },
+        ],
+      });
+      expect(result.ok && result.globalNavigation).toEqual({
+        status: "present",
+        items: [
+          validGlobalNav("/b", "s.tsx"),
+          validGlobalNav("/", "s.tsx"),
+          validGlobalNav("/b", "s.tsx"),
+        ],
+      });
+    });
+
+    it("records unknown properties on entry and source", () => {
+      const result = run({
+        screens: [{ route: "/", source: { file: "a.tsx" } }],
+        globalNavigation: [
+          { to: "/", label: "home", source: { file: "s.tsx", line: 1 } },
+        ],
+      });
+      expect(result.ok && result.globalNavigation).toEqual({
+        status: "present",
+        items: [validGlobalNav("/", "s.tsx")],
+      });
+      expect(result.ok && result.unrecognized).toEqual([
+        { path: "globalNavigation[0].label", value: "home" },
+        { path: "globalNavigation[0].source.line", value: 1 },
+      ]);
+    });
+
+    it("coexists with navigation and schema v1 without globalNavigation", () => {
+      const result = run({
+        schemaVersion: "1",
+        screens: [
+          { route: "/", source: { file: "a.tsx" } },
+          { route: "/b", source: { file: "b.tsx" } },
+        ],
+        navigation: [{ from: "/", to: "/b" }],
+        globalNavigation: [{ to: "/", source: { file: "shell.tsx" } }],
+      });
+      expect(result.ok && result.navigation).toEqual({
+        status: "present",
+        items: [{ kind: "valid", from: "/", to: "/b" }],
+      });
+      expect(result.ok && result.globalNavigation).toEqual({
+        status: "present",
+        items: [validGlobalNav("/", "shell.tsx")],
       });
     });
   });
