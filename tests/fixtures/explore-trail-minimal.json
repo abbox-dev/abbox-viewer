@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1",
+  "screens": [
+    { "route": "/", "source": { "file": "src/routes/index.tsx" } },
+    { "route": "/programs", "source": { "file": "src/routes/programs.tsx" } },
+    {
+      "route": "/programs/$programId",
+      "source": { "file": "src/routes/programs/$programId.tsx" }
+    },
+    { "route": "/saved", "source": { "file": "src/routes/saved.tsx" } }
+  ],
+  "globalNavigation": [
+    { "to": "/", "source": { "file": "src/AppShell.tsx" } },
+    { "to": "/programs", "source": { "file": "src/AppShell.tsx" } },
+    { "to": "/saved", "source": { "file": "src/AppShell.tsx" } }
+  ],
+  "navigation": [
+    { "from": "/programs", "to": "/programs/$programId" },
+    { "from": "/programs/$programId", "to": "/programs" }
+  ],
+  "actions": [
+    {
+      "route": "/programs/$programId",
+      "label": "Save program",
+      "kind": "invoke",
+      "source": { "file": "src/routes/programs/$programId.tsx" }
+    }
+  ]
+}

@@ -1,4 +1,10 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "../src/App";
@@ -9,6 +15,9 @@ import designSystemColors from "./fixtures/design-system-colors.json" with {
   type: "json",
 };
 import entitiesMinimal from "./fixtures/entities-minimal.json" with {
+  type: "json",
+};
+import exploreTrailMinimal from "./fixtures/explore-trail-minimal.json" with {
   type: "json",
 };
 import globalNavigationMinimal from "./fixtures/global-navigation-minimal.json" with {
@@ -74,9 +83,12 @@ describe("viewer", () => {
     expect(
       screen.getByRole("heading", { name: "6 Screens" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("/")).toBeInTheDocument();
+    const screenList = document.querySelector(".screen-list");
+    expect(screenList).toBeTruthy();
+    const list = within(screenList as HTMLElement);
+    expect(list.getByText("/")).toBeInTheDocument();
     expect(screen.getByText("src/routes/index.tsx")).toBeInTheDocument();
-    expect(screen.getByText("/investors/$investorId")).toBeInTheDocument();
+    expect(list.getByText("/investors/$investorId")).toBeInTheDocument();
     expect(fetchSpy).not.toHaveBeenCalled();
     fetchSpy.mockRestore();
   });
@@ -120,7 +132,11 @@ describe("viewer", () => {
 
   it("shows unknown fields beside valid screens", async () => {
     await selectFile(jsonFile("product.json", screensAndUnknown));
-    expect(screen.getByText("/dashboard")).toBeInTheDocument();
+    expect(
+      within(document.querySelector(".screen-list") as HTMLElement).getByText(
+        "/dashboard",
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByText("src/routes/dashboard.tsx")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Unrecognized data" }),
@@ -242,7 +258,27 @@ describe("viewer", () => {
 
   it("does not show main navigation UI when globalNavigation is absent", async () => {
     await selectFile(jsonFile("abbox.json", screens));
-    expect(screen.queryByText(/main navigation/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/main navigation destinations/i),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: /^Main navigation/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows Explore when valid screens exist and hides it for zero screens", async () => {
+    await selectFile(jsonFile("explore.json", exploreTrailMinimal));
+    expect(
+      screen.getByRole("heading", { name: "Explore" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Start screen")).toBeInTheDocument();
+
+    await selectFile(
+      jsonFile("empty-screens.json", { schemaVersion: "1", screens: [] }),
+    );
+    expect(
+      screen.queryByRole("heading", { name: "Explore" }),
+    ).not.toBeInTheDocument();
   });
 
   it("shows main navigation with summary, section, and shared source", async () => {
@@ -565,7 +601,11 @@ describe("viewer", () => {
     expect(
       screen.queryByRole("heading", { name: "2 Screens" }),
     ).not.toBeInTheDocument();
-    expect(screen.getByText("/ok")).toBeInTheDocument();
+    expect(
+      within(document.querySelector(".screen-list") as HTMLElement).getByText(
+        "/ok",
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByText("src/ok.tsx")).toBeInTheDocument();
     expect(screen.getByText("Screen 2 is invalid.")).toBeInTheDocument();
     await user.click(screen.getByText("Object (1)"));
@@ -596,7 +636,11 @@ describe("viewer", () => {
       }),
     );
     expect(screen.queryByText("src/routes/saved.tsx")).not.toBeInTheDocument();
-    expect(screen.getByText("/settings")).toBeInTheDocument();
+    expect(
+      within(document.querySelector(".screen-list") as HTMLElement).getByText(
+        "/settings",
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByText("src/routes/settings.tsx")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "1 Screen" }),
